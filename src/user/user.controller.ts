@@ -9,12 +9,15 @@ import {
   HttpCode,
   BadRequestException,
   NotFoundException,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from '../interfaces';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { StatusCodes } from 'http-status-codes';
+import { validate as uuidValidate } from 'uuid';
 
 @Controller('user')
 export class UserController {
@@ -28,11 +31,11 @@ export class UserController {
   @Get(':id')
   @HttpCode(StatusCodes.OK)
   getUserById(@Param('id') id: string): User | undefined {
-    const user = this.userService.getUserById(id);
-
-    if (!id || !this.isValidUUID(id)) {
+    if (!this.isValidUUID(id)) {
       throw new BadRequestException('Invalid userId');
     }
+
+    const user = this.userService.getUserById(id);
 
     if (!user) {
       throw new NotFoundException('User not found');
@@ -42,26 +45,47 @@ export class UserController {
   }
 
   @Post()
+  @UsePipes(new ValidationPipe())
+  @HttpCode(StatusCodes.CREATED)
   createUser(@Body() newUser: CreateUserDto): User {
+    if (!newUser.login || !newUser.password) {
+      throw new BadRequestException('Missing required fields');
+    }
     return this.userService.createUser(newUser);
   }
 
   @Put(':id')
-  updateUser(
-    @Param('id') id: string,
-    @Body() update: UpdatePasswordDto,
-  ): User | undefined {
-    return this.userService.updateUser(id, update);
+  @UsePipes(new ValidationPipe())
+  @HttpCode(StatusCodes.OK)
+  updateUser(@Param('id') id: string, @Body() update: UpdatePasswordDto): User {
+    if (!this.isValidUUID(id)) {
+      throw new BadRequestException('Invalid userId');
+    }
+
+    const updatedUser = this.userService.updateUser(id, update);
+
+    if (!updatedUser) {
+      throw new NotFoundException('User not found');
+    }
+
+    return updatedUser;
   }
 
   @Delete(':id')
-  deleteUser(@Param('id') id: string): boolean {
-    return this.userService.deleteUser(id);
+  @HttpCode(StatusCodes.NO_CONTENT)
+  deleteUser(@Param('id') id: string): void {
+    if (!this.isValidUUID(id)) {
+      throw new BadRequestException('Invalid userId');
+    }
+
+    const deleted = this.userService.deleteUser(id);
+
+    if (!deleted) {
+      throw new NotFoundException('User not found');
+    }
   }
 
   private isValidUUID(id: string): boolean {
-    // You can implement your UUID validation logic here, e.g., using a regular expression or any other method
-    // For demonstration purposes, we'll assume any non-empty string is valid
-    return id && typeof id === 'string' && id.trim().length > 0;
+    return uuidValidate(id);
   }
 }

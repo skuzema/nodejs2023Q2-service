@@ -13,6 +13,7 @@ export class DatabaseService {
   private albums: Album[] = [];
   private tracks: Track[] = [];
   private favorites: Favorites[] = [];
+  private version = 0;
 
   getAllUsers(): User[] {
     return this.users;
@@ -26,7 +27,7 @@ export class DatabaseService {
     const user: User = {
       ...newUser,
       id: uuid(),
-      version: 1,
+      version: this.version++,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     };
@@ -43,7 +44,7 @@ export class DatabaseService {
     const currentUser = this.users[userIndex];
     const updatedUserObj: User = {
       ...currentUser,
-      password: updatedUser.newPassword, // Update the password with the new value
+      password: updatedUser.newPassword,
       updatedAt: Date.now(),
     };
 
