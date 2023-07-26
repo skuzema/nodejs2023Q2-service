@@ -1,13 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import * as dotenv from 'dotenv';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  dotenv.config();
   const app = await NestFactory.create(AppModule);
-  const port = process.env.PORT || 4000;
-
-  await app.listen(port);
-  console.log(`Application is running on: ${await app.getUrl()}`);
+  app.useGlobalPipes(new ValidationPipe());
+  await app.listen(process.env.PORT || 4000);
 }
 bootstrap();

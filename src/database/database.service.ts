@@ -1,42 +1,63 @@
+// src/services/database.service.ts
+
 import { Injectable } from '@nestjs/common';
-import { InMemoryDBV1Entity } from '@nestjs-addons/in-memory-db';
-import { v4 } from 'uuid';
+import { v4 as uuid } from 'uuid';
+import { User, Artist, Album, Track, Favorites } from '../interfaces';
+import { CreateUserDto } from '../user/dto/create-user.dto';
+import { UpdatePasswordDto } from '../user/dto/update-password.dto';
 
 @Injectable()
-export class DatabaseService<T extends InMemoryDBV1Entity> {
-  private readonly db: T[] = [];
+export class DatabaseService {
+  private users: User[] = [];
+  private artists: Artist[] = [];
+  private albums: Album[] = [];
+  private tracks: Track[] = [];
+  private favorites: Favorites[] = [];
 
-  create(item: T): T {
-    const newItem = { ...item, id: this.generateId() };
-    this.db.push(newItem);
-    return newItem;
+  getAllUsers(): User[] {
+    return this.users;
   }
 
-  findAll(): T[] {
-    return this.db;
+  getUserById(id: string): User | undefined {
+    return this.users.find((user) => user.id === id);
   }
 
-  findById(id: string): T {
-    return this.db.find((item) => String(item.id) === id);
+  createUser(newUser: CreateUserDto): User {
+    const user: User = {
+      ...newUser,
+      id: uuid(),
+      version: 1,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    };
+    this.users.push(user);
+    return user;
   }
 
-  update(updatedItem: T): T {
-    const index = this.db.findIndex((item) => item.id === updatedItem.id);
-    if (index === -1) {
-      throw new Error('Item not found');
+  updateUser(id: string, updatedUser: UpdatePasswordDto): User | undefined {
+    const userIndex = this.users.findIndex((user) => user.id === id);
+    if (userIndex === -1) {
+      return undefined;
     }
-    this.db[index] = updatedItem;
-    return updatedItem;
+
+    const currentUser = this.users[userIndex];
+    const updatedUserObj: User = {
+      ...currentUser,
+      password: updatedUser.newPassword, // Update the password with the new value
+      updatedAt: Date.now(),
+    };
+
+    this.users[userIndex] = updatedUserObj;
+    return updatedUserObj;
   }
 
-  delete(id: string): void {
-    const index = this.db.findIndex((item) => String(item.id) === id);
-    if (index !== -1) {
-      this.db.splice(index, 1);
+  deleteUser(id: string): boolean {
+    const userIndex = this.users.findIndex((user) => user.id === id);
+    if (userIndex === -1) {
+      return false;
     }
-  }
 
-  private generateId(): string {
-    return v4();
+    this.users.splice(userIndex, 1);
+    return true;
   }
 }
