@@ -7,88 +7,87 @@ import {
   Param,
   Body,
   HttpCode,
-  BadRequestException,
   NotFoundException,
   UsePipes,
   ValidationPipe,
+  ParseUUIDPipe,
+  ForbiddenException,
 } from '@nestjs/common';
+import {
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiNoContentResponse,
+  ApiNotFoundResponse,
+} from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { StatusCodes } from 'http-status-codes';
-import { validate as uuidValidate } from 'uuid';
+import { MESSAGES } from '../resources/messages';
 import { UserEntity } from './entities/user.entity';
-
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
   async findAll(): Promise<UserEntity[]> {
-    return this.userService.findAll();
+    return await this.userService.findAll();
   }
 
   @Get(':id')
   @HttpCode(StatusCodes.OK)
-  async findOne(@Param('id') id: string): Promise<UserEntity | undefined> {
-    if (!this.isValidUUID(id)) {
-      throw new BadRequestException('Invalid userId');
+  @ApiNotFoundResponse({ description: MESSAGES.userNotFound })
+  @ApiBadRequestResponse({ description: MESSAGES.invalidUserId })
+  async findOne(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): Promise<UserEntity> {
+    try {
+      return await this.userService.findOne(id);
+    } catch (error) {
+      throw new NotFoundException(error.message);
     }
-
-    const user = this.userService.findOne(id);
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    return user;
   }
 
   @Post()
   @UsePipes(new ValidationPipe())
-  @HttpCode(StatusCodes.CREATED)
+  @ApiCreatedResponse({ description: MESSAGES.userSuccessfullyCreated })
+  @ApiBadRequestResponse({
+    description: MESSAGES.missingRequiredFields,
+  })
   async create(@Body() newUser: CreateUserDto): Promise<UserEntity> {
-    if (!newUser.login || !newUser.password) {
-      throw new BadRequestException('Missing required fields');
-    }
-    return this.userService.create(newUser);
+    return await this.userService.create(newUser);
   }
 
   @Put(':id')
   @UsePipes(new ValidationPipe())
-  @HttpCode(StatusCodes.OK)
+  @ApiBadRequestResponse({ description: MESSAGES.invalidUserId })
+  @ApiNotFoundResponse({ description: MESSAGES.userNotFound })
+  @ApiForbiddenResponse({ description: MESSAGES.oldPasswordIsWrong })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() update: UpdatePasswordDto,
   ): Promise<UserEntity> {
-    if (!this.isValidUUID(id)) {
-      throw new BadRequestException('Invalid userId');
+    try {
+      return await this.userService.update(id, update);
+    } catch (error) {
+      if (error instanceof Error && error.message === 'entity not found') {
+        throw new NotFoundException(error.message);
+      }
+      throw new ForbiddenException(error.message);
     }
-
-    const updatedUser = this.userService.update(id, update);
-
-    if (!updatedUser) {
-      throw new NotFoundException('User not found');
-    }
-
-    return updatedUser;
   }
 
   @Delete(':id')
   @HttpCode(StatusCodes.NO_CONTENT)
-  deleteUser(@Param('id') id: string): void {
-    if (!this.isValidUUID(id)) {
-      throw new BadRequestException('Invalid userId');
+  @ApiNoContentResponse({ description: MESSAGES.userDeletedSuccessfully })
+  @ApiBadRequestResponse({ description: MESSAGES.invalidUserId })
+  @ApiNotFoundResponse({ description: MESSAGES.userNotFound })
+  async remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+    try {
+      await this.userService.remove(id);
+    } catch (error) {
+      throw new NotFoundException(error.message);
     }
-
-    const deleted = this.userService.remove(id);
-
-    if (!deleted) {
-      throw new NotFoundException('User not found');
-    }
-  }
-
-  private isValidUUID(id: string): boolean {
-    return uuidValidate(id);
   }
 }
