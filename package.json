@@ -2,7 +2,7 @@
   "name": "home-library",
   "version": "0.0.1",
   "description": "",
-  "author": "",
+  "author": "Sergejs Kuzema",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
@@ -21,7 +21,6 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
   },
   "dependencies": {
-    "@nestjs-addons/in-memory-db": "^3.0.3",
     "@nestjs/common": "^8.4.7",
     "@nestjs/core": "^8.4.7",
     "@nestjs/jwt": "^9.0.0",

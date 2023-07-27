@@ -13,29 +13,29 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { User } from '../interfaces';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { StatusCodes } from 'http-status-codes';
 import { validate as uuidValidate } from 'uuid';
+import { UserEntity } from './entities/user.entity';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  getAllUsers(): User[] {
-    return this.userService.getAllUsers();
+  async findAll(): Promise<UserEntity[]> {
+    return this.userService.findAll();
   }
 
   @Get(':id')
   @HttpCode(StatusCodes.OK)
-  getUserById(@Param('id') id: string): User | undefined {
+  async findOne(@Param('id') id: string): Promise<UserEntity | undefined> {
     if (!this.isValidUUID(id)) {
       throw new BadRequestException('Invalid userId');
     }
 
-    const user = this.userService.getUserById(id);
+    const user = this.userService.findOne(id);
 
     if (!user) {
       throw new NotFoundException('User not found');
@@ -47,22 +47,25 @@ export class UserController {
   @Post()
   @UsePipes(new ValidationPipe())
   @HttpCode(StatusCodes.CREATED)
-  createUser(@Body() newUser: CreateUserDto): User {
+  async create(@Body() newUser: CreateUserDto): Promise<UserEntity> {
     if (!newUser.login || !newUser.password) {
       throw new BadRequestException('Missing required fields');
     }
-    return this.userService.createUser(newUser);
+    return this.userService.create(newUser);
   }
 
   @Put(':id')
   @UsePipes(new ValidationPipe())
   @HttpCode(StatusCodes.OK)
-  updateUser(@Param('id') id: string, @Body() update: UpdatePasswordDto): User {
+  async update(
+    @Param('id') id: string,
+    @Body() update: UpdatePasswordDto,
+  ): Promise<UserEntity> {
     if (!this.isValidUUID(id)) {
       throw new BadRequestException('Invalid userId');
     }
 
-    const updatedUser = this.userService.updateUser(id, update);
+    const updatedUser = this.userService.update(id, update);
 
     if (!updatedUser) {
       throw new NotFoundException('User not found');
@@ -78,7 +81,7 @@ export class UserController {
       throw new BadRequestException('Invalid userId');
     }
 
-    const deleted = this.userService.deleteUser(id);
+    const deleted = this.userService.remove(id);
 
     if (!deleted) {
       throw new NotFoundException('User not found');
