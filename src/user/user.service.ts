@@ -3,7 +3,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from '../user/dto/update-password.dto';
 import { DatabaseService } from '../database/database.service';
 import { UserEntity } from './entities/user.entity';
-import { UserDto } from './dto/user.dto';
 import { v4 as uuid } from 'uuid';
 import { MESSAGES } from '../resources/messages';
 
@@ -11,11 +10,11 @@ import { MESSAGES } from '../resources/messages';
 export class UserService {
   constructor(private readonly dbService: DatabaseService) {}
 
-  async findAll(): Promise<UserDto[]> {
+  async findAll(): Promise<UserEntity[]> {
     return this.dbService.users;
   }
 
-  async findOne(id: string): Promise<UserDto> {
+  async findOne(id: string): Promise<UserEntity> {
     const user = this.dbService.users.find((user) => user.id === id);
     if (!user) {
       throw new HttpException(MESSAGES.userNotFound, HttpStatus.NOT_FOUND);
@@ -23,7 +22,7 @@ export class UserService {
     return user;
   }
 
-  async create(newUser: CreateUserDto): Promise<UserDto> {
+  create(newUser: CreateUserDto) {
     const user: UserEntity = {
       ...newUser,
       id: uuid(),
@@ -35,12 +34,15 @@ export class UserService {
     return user;
   }
 
-  async update(id: string, updatedUser: UpdatePasswordDto): Promise<UserDto> {
+  update(id: string, updatedUser: UpdatePasswordDto): UserEntity {
     const userIndex = this.dbService.users.findIndex((user) => user.id === id);
     if (userIndex === -1) {
       throw new HttpException(MESSAGES.userNotFound, HttpStatus.NOT_FOUND);
     }
     const currentUser = this.dbService.users[userIndex];
+    if (currentUser.password !== updatedUser.oldPassword) {
+      throw new HttpException(MESSAGES.wrongPassword, HttpStatus.FORBIDDEN);
+    }
     const updatedUserObj: UserEntity = {
       ...currentUser,
       password: updatedUser.newPassword,
