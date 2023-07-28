@@ -37,17 +37,17 @@ export class UserController {
 
   @Get()
   @ApiOkResponse()
-  async findAll() {
-    return await this.userService.findAll();
+  findAll(): UserEntity[] {
+    return this.userService.findAll();
   }
 
   @Get(':id')
   @ApiOkResponse()
   @ApiNotFoundResponse({ description: MESSAGES.userNotFound })
   @ApiBadRequestResponse({ description: MESSAGES.invalidUserId })
-  async findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+  findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     try {
-      return await this.userService.findOne(id);
+      return this.userService.findOne(id);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -85,9 +85,9 @@ export class UserController {
   @ApiNoContentResponse({ description: MESSAGES.userDeletedSuccessfully })
   @ApiBadRequestResponse({ description: MESSAGES.invalidUserId })
   @ApiNotFoundResponse({ description: MESSAGES.userNotFound })
-  async remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+  remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     try {
-      await this.userService.remove(id);
+      this.userService.remove(id);
     } catch (error) {
       throw new NotFoundException(error.message);
     }

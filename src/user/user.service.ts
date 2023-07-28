@@ -10,11 +10,11 @@ import { MESSAGES } from '../resources/messages';
 export class UserService {
   constructor(private readonly dbService: DatabaseService) {}
 
-  async findAll(): Promise<UserEntity[]> {
+  findAll(): UserEntity[] {
     return this.dbService.users;
   }
 
-  async findOne(id: string): Promise<UserEntity> {
+  findOne(id: string): UserEntity {
     const user = this.dbService.users.find((user) => user.id === id);
     if (!user) {
       throw new HttpException(MESSAGES.userNotFound, HttpStatus.NOT_FOUND);
@@ -53,7 +53,7 @@ export class UserService {
     return updatedUserObj;
   }
 
-  async remove(id: string): Promise<boolean> {
+  remove(id: string): boolean {
     const userIndex = this.dbService.users.findIndex((user) => user.id === id);
     if (userIndex === -1) {
       throw new HttpException(MESSAGES.userNotFound, HttpStatus.NOT_FOUND);
