@@ -2,12 +2,12 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsBoolean } from 'class-validator';
 
 export class CreateArtistDto {
-  @ApiProperty()
+  @ApiProperty({ description: 'Artist name', example: 'Artist' })
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty()
+  @ApiProperty({ description: 'Has Grammy', example: 'true' })
   @IsBoolean()
   @IsNotEmpty()
   grammy: boolean;

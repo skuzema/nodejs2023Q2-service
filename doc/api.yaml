@@ -7,7 +7,7 @@ paths:
       parameters: []
       responses:
         '200':
-          description: ''
+          description: OK
       tags:
         - Users
     post:
@@ -37,7 +37,7 @@ paths:
             type: string
       responses:
         '200':
-          description: ''
+          description: OK
         '400':
           description: Invalid record id
         '404':
@@ -59,6 +59,8 @@ paths:
             schema:
               '$ref': '#/components/schemas/UpdatePasswordDto'
       responses:
+        '200':
+          description: Record updated successfully
         '400':
           description: Invalid record id
         '403':
@@ -90,7 +92,7 @@ paths:
       parameters: []
       responses:
         '200':
-          description: ''
+          description: OK
       tags:
         - Artists
     post:
@@ -120,7 +122,7 @@ paths:
             type: string
       responses:
         '200':
-          description: ''
+          description: OK
         '400':
           description: Invalid record id
         '404':
@@ -142,6 +144,8 @@ paths:
             schema:
               '$ref': '#/components/schemas/UpdateArtistDto'
       responses:
+        '200':
+          description: Record updated successfully
         '400':
           description: Invalid record id
         '404':
@@ -171,7 +175,7 @@ paths:
       parameters: []
       responses:
         '200':
-          description: ''
+          description: OK
       tags:
         - Tracks
     post:
@@ -201,7 +205,7 @@ paths:
             type: string
       responses:
         '200':
-          description: ''
+          description: OK
         '400':
           description: Invalid record id
         '404':
@@ -223,6 +227,8 @@ paths:
             schema:
               '$ref': '#/components/schemas/UpdateTrackDto'
       responses:
+        '200':
+          description: Record updated successfully
         '400':
           description: Invalid record id
         '404':
@@ -252,7 +258,7 @@ paths:
       parameters: []
       responses:
         '200':
-          description: ''
+          description: OK
       tags:
         - Albums
     post:
@@ -282,7 +288,7 @@ paths:
             type: string
       responses:
         '200':
-          description: ''
+          description: OK
         '400':
           description: Invalid record id
         '404':
@@ -304,6 +310,8 @@ paths:
             schema:
               '$ref': '#/components/schemas/UpdateAlbumDto'
       responses:
+        '200':
+          description: Record updated successfully
         '400':
           description: Invalid record id
         '404':
@@ -333,7 +341,7 @@ paths:
       parameters: []
       responses:
         '200':
-          description: ''
+          description: OK
       tags:
         - Favorites
   '/favs/track/{id}':
@@ -451,8 +459,12 @@ components:
       properties:
         login:
           type: string
+          description: Login
+          example: john
         password:
           type: string
+          description: Password
+          example: password
       required:
         - login
         - password
@@ -462,9 +474,11 @@ components:
         oldPassword:
           type: string
           description: Previous password
+          example: old_password
         newPassword:
           type: string
           description: New password
+          example: new_password
       required:
         - oldPassword
         - newPassword
@@ -473,8 +487,12 @@ components:
       properties:
         name:
           type: string
+          description: Artist name
+          example: Artist
         grammy:
           type: boolean
+          description: Has Grammy
+          example: 'true'
       required:
         - name
         - grammy
@@ -483,19 +501,31 @@ components:
       properties:
         name:
           type: string
+          description: Artist name
+          example: Artist
         grammy:
           type: boolean
+          description: Has Grammy
+          example: 'true'
     CreateTrackDto:
       type: object
       properties:
         name:
           type: string
+          description: Track name
+          example: Track1
         artistId:
           type: string
+          description: Artist id
+          example: ''
         albumId:
           type: string
+          description: Album id
+          example: ''
         duration:
           type: number
+          description: Duration
+          example: '3'
       required:
         - name
         - artistId
@@ -506,21 +536,35 @@ components:
       properties:
         name:
           type: string
+          description: Track name
+          example: Track1
         artistId:
           type: string
+          description: Artist id
+          example: ''
         albumId:
           type: string
+          description: Album id
+          example: ''
         duration:
           type: number
+          description: Duration
+          example: '3'
     CreateAlbumDto:
       type: object
       properties:
         name:
           type: string
+          description: Album name
+          example: Sample
         year:
           type: number
+          description: Album year
+          example: '2000'
         artistId:
           type: string
+          description: Artist id
+          example: id
       required:
         - name
         - year
@@ -530,7 +574,13 @@ components:
       properties:
         name:
           type: string
+          description: Album name
+          example: Sample
         year:
           type: number
+          description: Album year
+          example: '2000'
         artistId:
           type: string
+          description: Artist id
+          example: id

@@ -27,7 +27,7 @@ export class FavoriteController {
   constructor(private readonly favoriteService: FavoriteService) {}
 
   @Get()
-  @ApiOkResponse()
+  @ApiOkResponse({ description: MESSAGES.ok })
   findAll(): AllFavoriteDto {
     return this.favoriteService.findAll();
   }

@@ -35,13 +35,13 @@ export class TrackController {
   constructor(private readonly trackService: TrackService) {}
 
   @Get()
-  @ApiOkResponse()
+  @ApiOkResponse({ description: MESSAGES.ok })
   findAll(): TrackEntity[] {
     return this.trackService.findAll();
   }
 
   @Get(':id')
-  @ApiOkResponse()
+  @ApiOkResponse({ description: MESSAGES.ok })
   @ApiNotFoundResponse({ description: MESSAGES.recordNotFound })
   @ApiBadRequestResponse({ description: MESSAGES.invalidRecordId })
   findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
@@ -62,6 +62,7 @@ export class TrackController {
   }
 
   @Put(':id')
+  @ApiOkResponse({ description: MESSAGES.recordUpdatedSuccessfully })
   @ApiBadRequestResponse({ description: MESSAGES.invalidRecordId })
   @ApiNotFoundResponse({ description: MESSAGES.recordNotFound })
   update(

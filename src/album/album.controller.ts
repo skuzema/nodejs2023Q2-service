@@ -35,13 +35,13 @@ export class AlbumController {
   constructor(private readonly albumService: AlbumService) {}
 
   @Get()
-  @ApiOkResponse()
+  @ApiOkResponse({ description: MESSAGES.ok })
   findAll(): AlbumEntity[] {
     return this.albumService.findAll();
   }
 
   @Get(':id')
-  @ApiOkResponse()
+  @ApiOkResponse({ description: MESSAGES.ok })
   @ApiNotFoundResponse({ description: MESSAGES.recordNotFound })
   @ApiBadRequestResponse({ description: MESSAGES.invalidRecordId })
   findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
@@ -62,6 +62,7 @@ export class AlbumController {
   }
 
   @Put(':id')
+  @ApiOkResponse({ description: MESSAGES.recordUpdatedSuccessfully })
   @ApiBadRequestResponse({ description: MESSAGES.invalidRecordId })
   @ApiNotFoundResponse({ description: MESSAGES.recordNotFound })
   update(

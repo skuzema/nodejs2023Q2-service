@@ -10,8 +10,6 @@ import {
   NotFoundException,
   ParseUUIDPipe,
   ForbiddenException,
-  ClassSerializerInterceptor,
-  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -29,20 +27,19 @@ import { StatusCodes } from 'http-status-codes';
 import { MESSAGES } from '../resources/messages';
 import { UserEntity } from './entities/user.entity';
 
-@UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('Users')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  @ApiOkResponse()
-  findAll(): UserEntity[] {
+  @ApiOkResponse({ description: MESSAGES.ok })
+  findAll() {
     return this.userService.findAll();
   }
 
   @Get(':id')
-  @ApiOkResponse()
+  @ApiOkResponse({ description: MESSAGES.ok })
   @ApiNotFoundResponse({ description: MESSAGES.recordNotFound })
   @ApiBadRequestResponse({ description: MESSAGES.invalidRecordId })
   findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
@@ -63,6 +60,7 @@ export class UserController {
   }
 
   @Put(':id')
+  @ApiOkResponse({ description: MESSAGES.recordUpdatedSuccessfully })
   @ApiBadRequestResponse({ description: MESSAGES.invalidRecordId })
   @ApiNotFoundResponse({ description: MESSAGES.recordNotFound })
   @ApiForbiddenResponse({ description: MESSAGES.oldPasswordIsWrong })

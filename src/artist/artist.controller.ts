@@ -35,13 +35,13 @@ export class ArtistController {
   constructor(private readonly artistService: ArtistService) {}
 
   @Get()
-  @ApiOkResponse()
+  @ApiOkResponse({ description: MESSAGES.ok })
   findAll(): ArtistEntity[] {
     return this.artistService.findAll();
   }
 
   @Get(':id')
-  @ApiOkResponse()
+  @ApiOkResponse({ description: MESSAGES.ok })
   @ApiNotFoundResponse({ description: MESSAGES.recordNotFound })
   @ApiBadRequestResponse({ description: MESSAGES.invalidRecordId })
   findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
@@ -62,6 +62,7 @@ export class ArtistController {
   }
 
   @Put(':id')
+  @ApiOkResponse({ description: MESSAGES.recordUpdatedSuccessfully })
   @ApiBadRequestResponse({ description: MESSAGES.invalidRecordId })
   @ApiNotFoundResponse({ description: MESSAGES.recordNotFound })
   update(
