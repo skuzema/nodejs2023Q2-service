@@ -29,7 +29,7 @@ import { MESSAGES } from '../resources/messages';
 import { AlbumEntity } from './entities/album.entity';
 
 @UseInterceptors(ClassSerializerInterceptor)
-@ApiTags('Album')
+@ApiTags('Albums')
 @Controller('album')
 export class AlbumController {
   constructor(private readonly albumService: AlbumService) {}

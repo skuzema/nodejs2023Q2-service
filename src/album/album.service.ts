@@ -54,7 +54,17 @@ export class AlbumService {
     if (albumIndex === -1) {
       throw new HttpException(MESSAGES.recordNotFound, HttpStatus.NOT_FOUND);
     }
-
+    this.dbService.tracks.forEach((track) => {
+      if (track.albumId === id) {
+        track.albumId = null;
+      }
+    });
+    const albumFavsIndex = this.dbService.favs.albums.findIndex(
+      (album) => album === id,
+    );
+    if (albumFavsIndex > -1) {
+      this.dbService.favs.albums.splice(albumFavsIndex, 1);
+    }
     this.dbService.albums.splice(albumIndex, 1);
     return true;
   }
