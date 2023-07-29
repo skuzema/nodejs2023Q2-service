@@ -1,9 +1,9 @@
 export const MESSAGES = {
-  invalidUserId: 'Invalid user id',
+  invalidRecordId: 'Invalid record id',
   wrongPassword: 'Wrong password',
-  userNotFound: 'User not found',
-  userSuccessfullyCreated: 'User successfully created',
+  recordNotFound: 'Record not found',
+  recordSuccessfullyCreated: 'Record successfully created',
   missingRequiredFields: 'Missing required fields',
   oldPasswordIsWrong: 'Old password is wrong',
-  userDeletedSuccessfully: 'User deleted successfully',
+  recordDeletedSuccessfully: 'Record deleted successfully',
 };

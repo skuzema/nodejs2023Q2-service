@@ -17,7 +17,7 @@ export class UserService {
   findOne(id: string): UserEntity {
     const user = this.dbService.users.find((user) => user.id === id);
     if (!user) {
-      throw new HttpException(MESSAGES.userNotFound, HttpStatus.NOT_FOUND);
+      throw new HttpException(MESSAGES.recordNotFound, HttpStatus.NOT_FOUND);
     }
     return user;
   }
@@ -37,7 +37,7 @@ export class UserService {
   update(id: string, updatedUser: UpdatePasswordDto): UserEntity {
     const userIndex = this.dbService.users.findIndex((user) => user.id === id);
     if (userIndex === -1) {
-      throw new HttpException(MESSAGES.userNotFound, HttpStatus.NOT_FOUND);
+      throw new HttpException(MESSAGES.recordNotFound, HttpStatus.NOT_FOUND);
     }
     const currentUser = this.dbService.users[userIndex];
     if (currentUser.password !== updatedUser.oldPassword) {
@@ -53,10 +53,10 @@ export class UserService {
     return updatedUserObj;
   }
 
-  remove(id: string): boolean {
+  async remove(id: string): Promise<boolean> {
     const userIndex = this.dbService.users.findIndex((user) => user.id === id);
     if (userIndex === -1) {
-      throw new HttpException(MESSAGES.userNotFound, HttpStatus.NOT_FOUND);
+      throw new HttpException(MESSAGES.recordNotFound, HttpStatus.NOT_FOUND);
     }
 
     this.dbService.users.splice(userIndex, 1);

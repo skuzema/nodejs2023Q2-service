@@ -16,29 +16,28 @@ import {
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
-  ApiForbiddenResponse,
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdatePasswordDto } from './dto/update-password.dto';
+import { ArtistService } from './artist.service';
+import { CreateArtistDto } from './dto/create-artist.dto';
+import { UpdateArtistDto } from './dto/update-artist.dto';
 import { StatusCodes } from 'http-status-codes';
 import { MESSAGES } from '../resources/messages';
-import { UserEntity } from './entities/user.entity';
+import { ArtistEntity } from './entities/artist.entity';
 
 @UseInterceptors(ClassSerializerInterceptor)
-@ApiTags('User')
-@Controller('user')
-export class UserController {
-  constructor(private readonly userService: UserService) {}
+@ApiTags('Artist')
+@Controller('artist')
+export class ArtistController {
+  constructor(private readonly artistService: ArtistService) {}
 
   @Get()
   @ApiOkResponse()
-  findAll(): UserEntity[] {
-    return this.userService.findAll();
+  findAll(): ArtistEntity[] {
+    return this.artistService.findAll();
   }
 
   @Get(':id')
@@ -47,7 +46,7 @@ export class UserController {
   @ApiBadRequestResponse({ description: MESSAGES.invalidRecordId })
   findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     try {
-      return this.userService.findOne(id);
+      return this.artistService.findOne(id);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -58,20 +57,19 @@ export class UserController {
   @ApiBadRequestResponse({
     description: MESSAGES.missingRequiredFields,
   })
-  create(@Body() newUser: CreateUserDto): UserEntity {
-    return new UserEntity(this.userService.create(newUser));
+  create(@Body() newArtist: CreateArtistDto): ArtistEntity {
+    return this.artistService.create(newArtist);
   }
 
   @Put(':id')
   @ApiBadRequestResponse({ description: MESSAGES.invalidRecordId })
   @ApiNotFoundResponse({ description: MESSAGES.recordNotFound })
-  @ApiForbiddenResponse({ description: MESSAGES.oldPasswordIsWrong })
   update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Body() update: UpdatePasswordDto,
+    @Body() update: UpdateArtistDto,
   ) {
     try {
-      return new UserEntity(this.userService.update(id, update));
+      return this.artistService.update(id, update);
     } catch (error) {
       if (error instanceof Error && error.message === MESSAGES.recordNotFound) {
         throw new NotFoundException(error.message);
@@ -87,7 +85,7 @@ export class UserController {
   @ApiNotFoundResponse({ description: MESSAGES.recordNotFound })
   async remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     try {
-      await this.userService.remove(id);
+      await this.artistService.remove(id);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
