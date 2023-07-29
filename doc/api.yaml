@@ -1,0 +1,536 @@
+---
+openapi: 3.0.0
+paths:
+  '/user':
+    get:
+      operationId: UserController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - Users
+    post:
+      operationId: UserController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              '$ref': '#/components/schemas/CreateUserDto'
+      responses:
+        '201':
+          description: Record successfully created
+        '400':
+          description: Missing required fields
+      tags:
+        - Users
+  '/user/{id}':
+    get:
+      operationId: UserController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+        '400':
+          description: Invalid record id
+        '404':
+          description: Record not found
+      tags:
+        - Users
+    put:
+      operationId: UserController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              '$ref': '#/components/schemas/UpdatePasswordDto'
+      responses:
+        '400':
+          description: Invalid record id
+        '403':
+          description: Old password is wrong
+        '404':
+          description: Record not found
+      tags:
+        - Users
+    delete:
+      operationId: UserController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Record deleted successfully
+        '400':
+          description: Invalid record id
+        '404':
+          description: Record not found
+      tags:
+        - Users
+  '/artist':
+    get:
+      operationId: ArtistController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - Artists
+    post:
+      operationId: ArtistController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              '$ref': '#/components/schemas/CreateArtistDto'
+      responses:
+        '201':
+          description: Record successfully created
+        '400':
+          description: Missing required fields
+      tags:
+        - Artists
+  '/artist/{id}':
+    get:
+      operationId: ArtistController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+        '400':
+          description: Invalid record id
+        '404':
+          description: Record not found
+      tags:
+        - Artists
+    put:
+      operationId: ArtistController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              '$ref': '#/components/schemas/UpdateArtistDto'
+      responses:
+        '400':
+          description: Invalid record id
+        '404':
+          description: Record not found
+      tags:
+        - Artists
+    delete:
+      operationId: ArtistController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Record deleted successfully
+        '400':
+          description: Invalid record id
+        '404':
+          description: Record not found
+      tags:
+        - Artists
+  '/track':
+    get:
+      operationId: TrackController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - Tracks
+    post:
+      operationId: TrackController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              '$ref': '#/components/schemas/CreateTrackDto'
+      responses:
+        '201':
+          description: Record successfully created
+        '400':
+          description: Missing required fields
+      tags:
+        - Tracks
+  '/track/{id}':
+    get:
+      operationId: TrackController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+        '400':
+          description: Invalid record id
+        '404':
+          description: Record not found
+      tags:
+        - Tracks
+    put:
+      operationId: TrackController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              '$ref': '#/components/schemas/UpdateTrackDto'
+      responses:
+        '400':
+          description: Invalid record id
+        '404':
+          description: Record not found
+      tags:
+        - Tracks
+    delete:
+      operationId: TrackController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Record deleted successfully
+        '400':
+          description: Invalid record id
+        '404':
+          description: Record not found
+      tags:
+        - Tracks
+  '/album':
+    get:
+      operationId: AlbumController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - Albums
+    post:
+      operationId: AlbumController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              '$ref': '#/components/schemas/CreateAlbumDto'
+      responses:
+        '201':
+          description: Record successfully created
+        '400':
+          description: Missing required fields
+      tags:
+        - Albums
+  '/album/{id}':
+    get:
+      operationId: AlbumController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+        '400':
+          description: Invalid record id
+        '404':
+          description: Record not found
+      tags:
+        - Albums
+    put:
+      operationId: AlbumController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              '$ref': '#/components/schemas/UpdateAlbumDto'
+      responses:
+        '400':
+          description: Invalid record id
+        '404':
+          description: Record not found
+      tags:
+        - Albums
+    delete:
+      operationId: AlbumController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Record deleted successfully
+        '400':
+          description: Invalid record id
+        '404':
+          description: Record not found
+      tags:
+        - Albums
+  '/favs':
+    get:
+      operationId: FavoriteController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - Favorites
+  '/favs/track/{id}':
+    post:
+      operationId: FavoriteController_addTrack
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Record successfully created
+        '400':
+          description: Missing required fields
+      tags:
+        - Favorites
+    delete:
+      operationId: FavoriteController_removeTrack
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Record deleted successfully
+        '400':
+          description: Invalid record id
+        '404':
+          description: Record not found
+      tags:
+        - Favorites
+  '/favs/album/{id}':
+    post:
+      operationId: FavoriteController_addAlbum
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Record successfully created
+        '400':
+          description: Missing required fields
+      tags:
+        - Favorites
+    delete:
+      operationId: FavoriteController_removeAlbum
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Record deleted successfully
+        '400':
+          description: Invalid record id
+        '404':
+          description: Record not found
+      tags:
+        - Favorites
+  '/favs/artist/{id}':
+    post:
+      operationId: FavoriteController_addArtist
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Record successfully created
+        '400':
+          description: Missing required fields
+      tags:
+        - Favorites
+    delete:
+      operationId: FavoriteController_removeArtist
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Record deleted successfully
+        '400':
+          description: Invalid record id
+        '404':
+          description: Record not found
+      tags:
+        - Favorites
+info:
+  title: Home Library Service
+  description:
+    Users can create, read, update, delete data about Artists, Tracks and
+    Albums, add them to Favorites in their own Home Library!
+  version: '1.0'
+  contact: {}
+tags: []
+servers: []
+components:
+  schemas:
+    CreateUserDto:
+      type: object
+      properties:
+        login:
+          type: string
+        password:
+          type: string
+      required:
+        - login
+        - password
+    UpdatePasswordDto:
+      type: object
+      properties:
+        oldPassword:
+          type: string
+          description: Previous password
+        newPassword:
+          type: string
+          description: New password
+      required:
+        - oldPassword
+        - newPassword
+    CreateArtistDto:
+      type: object
+      properties:
+        name:
+          type: string
+        grammy:
+          type: boolean
+      required:
+        - name
+        - grammy
+    UpdateArtistDto:
+      type: object
+      properties:
+        name:
+          type: string
+        grammy:
+          type: boolean
+    CreateTrackDto:
+      type: object
+      properties:
+        name:
+          type: string
+        artistId:
+          type: string
+        albumId:
+          type: string
+        duration:
+          type: number
+      required:
+        - name
+        - artistId
+        - albumId
+        - duration
+    UpdateTrackDto:
+      type: object
+      properties:
+        name:
+          type: string
+        artistId:
+          type: string
+        albumId:
+          type: string
+        duration:
+          type: number
+    CreateAlbumDto:
+      type: object
+      properties:
+        name:
+          type: string
+        year:
+          type: number
+        artistId:
+          type: string
+      required:
+        - name
+        - year
+        - artistId
+    UpdateAlbumDto:
+      type: object
+      properties:
+        name:
+          type: string
+        year:
+          type: number
+        artistId:
+          type: string

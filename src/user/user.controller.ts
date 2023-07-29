@@ -30,7 +30,7 @@ import { MESSAGES } from '../resources/messages';
 import { UserEntity } from './entities/user.entity';
 
 @UseInterceptors(ClassSerializerInterceptor)
-@ApiTags('User')
+@ApiTags('Users')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}

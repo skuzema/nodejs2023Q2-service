@@ -29,7 +29,7 @@ import { MESSAGES } from '../resources/messages';
 import { ArtistEntity } from './entities/artist.entity';
 
 @UseInterceptors(ClassSerializerInterceptor)
-@ApiTags('Artist')
+@ApiTags('Artists')
 @Controller('artist')
 export class ArtistController {
   constructor(private readonly artistService: ArtistService) {}

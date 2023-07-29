@@ -1,7 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { MESSAGES } from 'src/resources/messages';
-// import { AllFavoriteDto } from './dto/all-favorite.dto';
 
 @Injectable()
 export class FavoriteService {
