@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: node
+    image: skuzema/home-library-node
+    build: .
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      - PORT=${PORT}
+    restart: always
+    networks:
+      - net
+
+networks:
+  net:
+    driver: bridge
