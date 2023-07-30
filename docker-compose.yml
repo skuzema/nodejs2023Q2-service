@@ -14,6 +14,9 @@ services:
       - net
     depends_on:
       - postgres
+    volumes:
+      - ./src:/usr/app/src
+      - node_modules:/usr/app/node_modules
 
   postgres:
     container_name: postgres
@@ -36,6 +39,7 @@ services:
 volumes:
   postgres_logs:
   postgres_data:
+  node_modules:
 
 networks:
   net:
