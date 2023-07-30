@@ -9,9 +9,26 @@ services:
       - ${PORT}:${PORT}
     environment:
       - PORT=${PORT}
-    restart: always
+    restart: on-failure
     networks:
       - net
+    depends_on:
+      - postgres
+
+  postgres:
+    container_name: postgres
+    image: skuzema/home-library-postgres
+    build: ./database
+    command: postgres -c logging_collector=on
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    networks:
+      - net
+    restart: on-failure
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: '${POSTGRES_USER}'
+      POSTGRES_PASSWORD: '${POSTGRES_PASSWORD}'
 
 networks:
   net:
