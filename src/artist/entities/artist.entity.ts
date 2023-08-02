@@ -11,6 +11,8 @@ export class ArtistEntity {
   grammy: boolean;
 
   constructor(partial: Partial<ArtistEntity>) {
-    Object.assign(this, partial);
+    this.id = partial.id;
+    this.name = partial.name;
+    this.grammy = partial.grammy;
   }
 }

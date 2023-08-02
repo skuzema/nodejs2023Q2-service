@@ -11,6 +11,8 @@ export class FavoriteEntity {
   tracks: string[];
 
   constructor(partial: Partial<FavoriteEntity>) {
-    Object.assign(this, partial);
+    this.artists = partial.artists;
+    this.albums = partial.albums;
+    this.tracks = partial.tracks;
   }
 }

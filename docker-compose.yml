@@ -9,14 +9,11 @@ services:
       - ${PORT}:${PORT}
     environment:
       - PORT=${PORT}
-    restart: on-failure
+    restart: always
     networks:
-      - net
+      - homelib-net
     depends_on:
       - postgres
-    volumes:
-      - ./src:/usr/app/src
-      - node_modules:/usr/app/node_modules
 
   postgres:
     container_name: postgres
@@ -26,8 +23,8 @@ services:
     ports:
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
     networks:
-      - net
-    restart: on-failure
+      - homelib-net
+    restart: always
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: '${POSTGRES_USER}'
@@ -39,8 +36,12 @@ services:
 volumes:
   postgres_logs:
   postgres_data:
-  node_modules:
 
 networks:
-  net:
+  homelib-net:
+    name: homelib-net
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+          gateway: 172.20.0.1

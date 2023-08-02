@@ -26,7 +26,7 @@ export class UserService {
     const user: UserEntity = {
       ...newUser,
       id: uuid(),
-      version: this.dbService.getVersion(),
+      version: 1,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     };
@@ -48,7 +48,7 @@ export class UserService {
       password: updatedUser.newPassword,
       updatedAt: Date.now(),
     };
-
+    updatedUserObj.version++;
     this.dbService.users[userIndex] = updatedUserObj;
     return updatedUserObj;
   }

@@ -1,7 +1,7 @@
-FROM node:lts-alpine
+FROM node:18-alpine
 WORKDIR /usr/app
 COPY package*.json .
-RUN npm install --force && npm cache clean --force
+RUN npm install
 COPY . .
 EXPOSE ${PORT}
-CMD [ "npm", "run", "start:nodemon" ]
+CMD ["npm", "run", "start:dev"]
