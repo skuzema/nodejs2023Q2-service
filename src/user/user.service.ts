@@ -1,17 +1,17 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from '../user/dto/update-password.dto';
-import { DatabaseService } from '../database/database.service';
 import { UserEntity } from './entities/user.entity';
 import { v4 as uuid } from 'uuid';
 import { MESSAGES } from '../resources/messages';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly dbService: DatabaseService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  findAll(): UserEntity[] {
-    return this.dbService.users;
+  async findAll(): Promise<UserEntity[]> {
+    return await this.prisma.user;
   }
 
   findOne(id: string): UserEntity {
