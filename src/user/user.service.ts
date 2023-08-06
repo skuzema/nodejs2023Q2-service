@@ -22,19 +22,28 @@ export class UserService {
     return user;
   }
 
-  async create(newUser: CreateUserDto): Promise<UserEntity> {
+  async create(newUser: CreateUserDto) {
     const currentTime = Date.now();
     const user: UserEntity = {
       ...newUser,
       id: uuid(),
       version: 1,
-      createdAt: new Date(currentTime),
-      updatedAt: new Date(currentTime),
+      createdAt: currentTime,
+      updatedAt: currentTime,
     };
     const data = await this.prisma.user.create({
-      data: user,
+      data: {
+        ...user,
+        createdAt: new Date(user.createdAt),
+        updatedAt: new Date(user.updatedAt),
+      },
     });
-    return new UserEntity(data);
+    const newUserEntity = new UserEntity({
+      ...data,
+      createdAt: data.createdAt.getTime(),
+      updatedAt: data.updatedAt.getTime(),
+    });
+    return newUserEntity;
   }
 
   async update(id: string, updatedUser: UpdatePasswordDto) {
@@ -49,15 +58,23 @@ export class UserService {
     const updatedUserObj: UserEntity = {
       ...currentUser,
       password: updatedUser.newPassword,
-      createdAt: new Date(currentTime),
-      updatedAt: new Date(currentTime),
+      createdAt: currentUser.createdAt.getTime(),
+      updatedAt: currentTime,
     };
     updatedUserObj.version++;
     const prismaUser = await this.prisma.user.update({
       where: { id },
-      data: updatedUserObj,
+      data: {
+        ...updatedUserObj,
+        createdAt: new Date(updatedUserObj.createdAt),
+        updatedAt: new Date(updatedUserObj.updatedAt),
+      },
     });
-    return prismaUser;
+    return new UserEntity({
+      ...prismaUser,
+      createdAt: prismaUser.createdAt.getTime(),
+      updatedAt: prismaUser.updatedAt.getTime(),
+    });
   }
 
   async remove(id: string) {

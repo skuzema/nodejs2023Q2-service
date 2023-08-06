@@ -12,10 +12,10 @@ export class UserEntity {
   version: number;
 
   @ApiProperty()
-  createdAt: Date;
+  createdAt: number;
 
   @ApiProperty()
-  updatedAt: Date;
+  updatedAt: number;
 
   @ApiProperty()
   @Exclude()
