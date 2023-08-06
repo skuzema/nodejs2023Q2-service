@@ -1,66 +1,67 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { DatabaseService } from '../database/database.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { TrackEntity } from './entities/track.entity';
 import { v4 as uuid } from 'uuid';
 import { MESSAGES } from '../resources/messages';
 
 @Injectable()
 export class TrackService {
-  constructor(private readonly dbService: DatabaseService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  findAll(): TrackEntity[] {
-    return this.dbService.tracks;
+  async findAll() {
+    return await this.prisma.track.findMany();
   }
 
-  findOne(id: string): TrackEntity {
-    const track = this.dbService.tracks.find((track) => track.id === id);
+  async findOne(id: string) {
+    const track = await this.prisma.track.findUnique({ where: { id } });
     if (!track) {
       throw new HttpException(MESSAGES.recordNotFound, HttpStatus.NOT_FOUND);
     }
     return track;
   }
 
-  create(newTrack: CreateTrackDto) {
+  async create(newTrack: CreateTrackDto) {
     const track: TrackEntity = {
       ...newTrack,
       id: uuid(),
     };
-    this.dbService.tracks.push(track);
-    return track;
+    return await this.prisma.track.create({
+      data: track,
+    });
   }
 
-  update(id: string, updatedTrack: UpdateTrackDto): TrackEntity {
-    const trackIndex = this.dbService.tracks.findIndex(
-      (track) => track.id === id,
-    );
-    if (trackIndex === -1) {
+  async update(id: string, updatedTrack: UpdateTrackDto) {
+    try {
+      return await this.prisma.track.update({
+        where: { id },
+        data: updatedTrack,
+      });
+    } catch {
       throw new HttpException(MESSAGES.recordNotFound, HttpStatus.NOT_FOUND);
     }
-    const currentTrack = this.dbService.tracks[trackIndex];
-    const updatedTrackObj: TrackEntity = {
-      ...currentTrack,
-      ...updatedTrack,
-    };
-    this.dbService.tracks[trackIndex] = updatedTrackObj;
-    return updatedTrackObj;
   }
 
-  async remove(id: string): Promise<boolean> {
-    const trackIndex = this.dbService.tracks.findIndex(
-      (track) => track.id === id,
-    );
-    if (trackIndex === -1) {
+  async remove(id: string) {
+    try {
+      await this.prisma.track.delete({ where: { id } });
+    } catch {
       throw new HttpException(MESSAGES.recordNotFound, HttpStatus.NOT_FOUND);
     }
-    const trackFavsIndex = this.dbService.favs.tracks.findIndex(
-      (track) => track === id,
-    );
-    if (trackFavsIndex > -1) {
-      this.dbService.favs.artists.splice(trackFavsIndex, 1);
-    }
-    this.dbService.tracks.splice(trackIndex, 1);
-    return true;
+    // const trackIndex = this.dbService.tracks.findIndex(
+    //   (track) => track.id === id,
+    // );
+    // if (trackIndex === -1) {
+    //   throw new HttpException(MESSAGES.recordNotFound, HttpStatus.NOT_FOUND);
+    // }
+    // const trackFavsIndex = this.dbService.favs.tracks.findIndex(
+    //   (track) => track === id,
+    // );
+    // if (trackFavsIndex > -1) {
+    //   this.dbService.favs.artists.splice(trackFavsIndex, 1);
+    // }
+    // this.dbService.tracks.splice(trackIndex, 1);
+    // return true;
   }
 }

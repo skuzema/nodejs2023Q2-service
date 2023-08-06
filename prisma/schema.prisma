@@ -33,7 +33,6 @@ model Album {
   tracks   Track[]
 }
 
-
 model Track {
   id       String   @id @default(uuid()) @unique
   name     String

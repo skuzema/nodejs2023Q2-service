@@ -26,7 +26,6 @@ import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { StatusCodes } from 'http-status-codes';
 import { MESSAGES } from '../resources/messages';
-import { TrackEntity } from './entities/track.entity';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('Tracks')
@@ -36,17 +35,17 @@ export class TrackController {
 
   @Get()
   @ApiOkResponse({ description: MESSAGES.ok })
-  findAll(): TrackEntity[] {
-    return this.trackService.findAll();
+  async findAll() {
+    return await this.trackService.findAll();
   }
 
   @Get(':id')
   @ApiOkResponse({ description: MESSAGES.ok })
   @ApiNotFoundResponse({ description: MESSAGES.recordNotFound })
   @ApiBadRequestResponse({ description: MESSAGES.invalidRecordId })
-  findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+  async findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     try {
-      return this.trackService.findOne(id);
+      return await this.trackService.findOne(id);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -57,20 +56,20 @@ export class TrackController {
   @ApiBadRequestResponse({
     description: MESSAGES.missingRequiredFields,
   })
-  create(@Body() newTrack: CreateTrackDto): TrackEntity {
-    return this.trackService.create(newTrack);
+  async create(@Body() newTrack: CreateTrackDto) {
+    return await this.trackService.create(newTrack);
   }
 
   @Put(':id')
   @ApiOkResponse({ description: MESSAGES.recordUpdatedSuccessfully })
   @ApiBadRequestResponse({ description: MESSAGES.invalidRecordId })
   @ApiNotFoundResponse({ description: MESSAGES.recordNotFound })
-  update(
+  async update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() update: UpdateTrackDto,
   ) {
     try {
-      return this.trackService.update(id, update);
+      return await this.trackService.update(id, update);
     } catch (error) {
       if (error instanceof Error && error.message === MESSAGES.recordNotFound) {
         throw new NotFoundException(error.message);
