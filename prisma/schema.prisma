@@ -46,5 +46,5 @@ model Track {
 model Favorites {
   id        String @id @default(uuid()) @unique
   type      String
-  objectId  String 
+  objectId  String
 }

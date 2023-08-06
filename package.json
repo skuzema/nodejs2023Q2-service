@@ -15,6 +15,7 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "start:migrate:dev": "prisma migrate deploy && nest start --watch",
+    "start:migrate": "prisma migrate deploy",
     "docker:scan": "docker scout cves skuzema/home-library:node & docker scout cves skuzema/home-library:postgres",
     "prisma:migrate": "npx prisma migrate dev --name init",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
