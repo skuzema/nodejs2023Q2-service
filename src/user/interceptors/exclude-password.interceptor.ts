@@ -23,12 +23,6 @@ export class ExcludePasswordInterceptor implements NestInterceptor {
   private transformItem(item: any): any {
     const transformedItem = { ...item };
     delete transformedItem.password;
-    // if (item?.createdAt) {
-    //   transformedItem.createdAt = item.createdAt.getTime();
-    // }
-    // if (item?.updatedAt) {
-    //   transformedItem.updatedAt = item.updatedAt.getTime();
-    // }
     return transformedItem;
   }
 }

@@ -49,19 +49,5 @@ export class TrackService {
     } catch {
       throw new HttpException(MESSAGES.recordNotFound, HttpStatus.NOT_FOUND);
     }
-    // const trackIndex = this.dbService.tracks.findIndex(
-    //   (track) => track.id === id,
-    // );
-    // if (trackIndex === -1) {
-    //   throw new HttpException(MESSAGES.recordNotFound, HttpStatus.NOT_FOUND);
-    // }
-    // const trackFavsIndex = this.dbService.favs.tracks.findIndex(
-    //   (track) => track === id,
-    // );
-    // if (trackFavsIndex > -1) {
-    //   this.dbService.favs.artists.splice(trackFavsIndex, 1);
-    // }
-    // this.dbService.tracks.splice(trackIndex, 1);
-    // return true;
   }
 }
