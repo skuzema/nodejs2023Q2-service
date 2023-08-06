@@ -8,58 +8,63 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(public prisma: PrismaService) {}
 
-  async findAll(): Promise<UserEntity[]> {
-    return await this.prisma.user;
+  async findAll() {
+    return await this.prisma.user.findMany();
   }
 
-  findOne(id: string): UserEntity {
-    const user = this.dbService.users.find((user) => user.id === id);
+  async findOne(id: string) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) {
       throw new HttpException(MESSAGES.recordNotFound, HttpStatus.NOT_FOUND);
     }
     return user;
   }
 
-  create(newUser: CreateUserDto) {
+  async create(newUser: CreateUserDto): Promise<UserEntity> {
+    const currentTime = Date.now();
     const user: UserEntity = {
       ...newUser,
       id: uuid(),
       version: 1,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
+      createdAt: new Date(currentTime),
+      updatedAt: new Date(currentTime),
     };
-    this.dbService.users.push(user);
-    return user;
+    const data = await this.prisma.user.create({
+      data: user,
+    });
+    return new UserEntity(data);
   }
 
-  update(id: string, updatedUser: UpdatePasswordDto): UserEntity {
-    const userIndex = this.dbService.users.findIndex((user) => user.id === id);
-    if (userIndex === -1) {
+  async update(id: string, updatedUser: UpdatePasswordDto) {
+    const currentTime = Date.now();
+    const currentUser = await this.prisma.user.findUnique({ where: { id } });
+    if (!currentUser) {
       throw new HttpException(MESSAGES.recordNotFound, HttpStatus.NOT_FOUND);
     }
-    const currentUser = this.dbService.users[userIndex];
     if (currentUser.password !== updatedUser.oldPassword) {
       throw new HttpException(MESSAGES.wrongPassword, HttpStatus.FORBIDDEN);
     }
     const updatedUserObj: UserEntity = {
       ...currentUser,
       password: updatedUser.newPassword,
-      updatedAt: Date.now(),
+      createdAt: new Date(currentTime),
+      updatedAt: new Date(currentTime),
     };
     updatedUserObj.version++;
-    this.dbService.users[userIndex] = updatedUserObj;
-    return updatedUserObj;
+    const prismaUser = await this.prisma.user.update({
+      where: { id },
+      data: updatedUserObj,
+    });
+    return prismaUser;
   }
 
-  async remove(id: string): Promise<boolean> {
-    const userIndex = this.dbService.users.findIndex((user) => user.id === id);
-    if (userIndex === -1) {
+  async remove(id: string) {
+    try {
+      await this.prisma.user.delete({ where: { id } });
+    } catch {
       throw new HttpException(MESSAGES.recordNotFound, HttpStatus.NOT_FOUND);
     }
-
-    this.dbService.users.splice(userIndex, 1);
-    return true;
   }
 }

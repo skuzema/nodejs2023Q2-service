@@ -14,7 +14,7 @@
     "start:nodemon": "nodemon --legacy-watch -r tsconfig-paths/register --exitcrash -x ts-node ./src/main.ts",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "start:migrate:dev": "prisma migrate dev --name init && npm run start:dev",
+    "start:migrate:dev": "prisma migrate deploy && nest start --watch",
     "docker:scan": "docker scan node & docker scan postgres",
     "prisma:migrate": "npx prisma migrate dev --name init",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
