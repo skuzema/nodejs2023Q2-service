@@ -10,7 +10,6 @@ const PORT = process.env.PORT || 4000;
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
-
   const config = new DocumentBuilder()
     .setTitle('Home Library Service')
     .setDescription(
@@ -20,7 +19,6 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('doc', app, document);
-
   await app.listen(PORT, () => console.log(`Server started on port: ${PORT}`));
 }
 bootstrap();
