@@ -7,12 +7,13 @@ services:
     build: .
     ports:
       - ${PORT}:${PORT}
-    environment:
-      - PORT=${PORT}
-      - DATABASE_URL=${DATABASE_URL}
+    env_file:
+      - .env
     restart: always
     networks:
       - homelib-net
+    volumes:
+      - ./src:/app/src
     depends_on:
       - postgres
 
@@ -31,9 +32,11 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
     volumes:
       - pg_data:/var/lib/postgresql/data
+      - pg_logs:/var/log/postgresql
 
 volumes:
   pg_data:
+  pg_logs:
 
 networks:
   homelib-net:
