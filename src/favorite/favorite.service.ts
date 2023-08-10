@@ -1,51 +1,46 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { FavoriteType } from 'src/interfaces';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { MESSAGES } from 'src/resources/messages';
-import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class FavoriteService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll() {
-    const getAlbums = await this.prisma.favorites.findMany({
+    const getAlbums = await this.prisma.favsOnAlbum.findMany({
       select: {
-        objectId: true,
+        albumId: true,
       },
-      where: { type: FavoriteType.album },
     });
-    const getTracks = await this.prisma.favorites.findMany({
+    const getTracks = await this.prisma.favsOnTrack.findMany({
       select: {
-        objectId: true,
+        trackId: true,
       },
-      where: { type: FavoriteType.track },
     });
-    const getArtists = await this.prisma.favorites.findMany({
+    const getArtists = await this.prisma.favsOnArtists.findMany({
       select: {
-        objectId: true,
+        artistId: true,
       },
-      where: { type: FavoriteType.artist },
     });
     return {
       albums: await this.prisma.album.findMany({
         where: {
           id: {
-            in: getAlbums.map((item) => item.objectId),
+            in: getAlbums.map((item) => item.albumId),
           },
         },
       }),
       tracks: await this.prisma.track.findMany({
         where: {
           id: {
-            in: getTracks.map((item) => item.objectId),
+            in: getTracks.map((item) => item.trackId),
           },
         },
       }),
       artists: await this.prisma.artist.findMany({
         where: {
           id: {
-            in: getArtists.map((item) => item.objectId),
+            in: getArtists.map((item) => item.artistId),
           },
         },
       }),
@@ -60,15 +55,23 @@ export class FavoriteService {
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
-    await this.prisma.favorites.create({
-      data: {
-        id: uuid(),
-        type: FavoriteType.artist,
-        objectId: id,
-      },
+    await this.prisma.favsOnArtists.create({
+      data: { artistId: id },
     });
     return artist;
   }
+
+  async removeArtist(id: string) {
+    try {
+      await this.prisma.favsOnArtists.delete({
+        where: { artistId: id },
+      });
+    } catch {
+      throw new HttpException(MESSAGES.recordNotFound, HttpStatus.NOT_FOUND);
+    }
+    return MESSAGES.recordDeletedSuccessfully;
+  }
+
   async addAlbum(id: string) {
     const album = await this.prisma.album.findUnique({ where: { id } });
     if (!album) {
@@ -77,14 +80,21 @@ export class FavoriteService {
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
-    await this.prisma.favorites.create({
-      data: {
-        id: uuid(),
-        type: FavoriteType.album,
-        objectId: id,
-      },
+    await this.prisma.favsOnAlbum.create({
+      data: { albumId: id },
     });
     return album;
+  }
+
+  async removeAlbum(id: string) {
+    try {
+      await this.prisma.favsOnAlbum.delete({
+        where: { albumId: id },
+      });
+    } catch {
+      throw new HttpException(MESSAGES.recordNotFound, HttpStatus.NOT_FOUND);
+    }
+    return MESSAGES.recordDeletedSuccessfully;
   }
 
   async addTrack(id: string) {
@@ -95,24 +105,16 @@ export class FavoriteService {
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
-    await this.prisma.favorites.create({
-      data: {
-        id: uuid(),
-        type: FavoriteType.track,
-        objectId: id,
-      },
+    await this.prisma.favsOnTrack.create({
+      data: { trackId: id },
     });
     return track;
   }
 
-  async remove(id: string) {
+  async removeTrack(id: string) {
     try {
-      await this.prisma.favorites.deleteMany({
-        where: {
-          objectId: {
-            contains: id,
-          },
-        },
+      await this.prisma.favsOnTrack.delete({
+        where: { trackId: id },
       });
     } catch {
       throw new HttpException(MESSAGES.recordNotFound, HttpStatus.NOT_FOUND);

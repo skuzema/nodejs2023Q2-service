@@ -41,28 +41,28 @@ CREATE TABLE "Track" (
 );
 
 -- CreateTable
-CREATE TABLE "Favorites" (
-    "id" TEXT NOT NULL,
-    "type" TEXT NOT NULL,
-    "objectId" TEXT NOT NULL,
+CREATE TABLE "FavsOnArtists" (
+    "artistId" TEXT NOT NULL
+);
 
-    CONSTRAINT "Favorites_pkey" PRIMARY KEY ("id")
+-- CreateTable
+CREATE TABLE "FavsOnAlbum" (
+    "albumId" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "FavsOnTrack" (
+    "trackId" TEXT NOT NULL
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_id_key" ON "User"("id");
+CREATE UNIQUE INDEX "FavsOnArtists_artistId_key" ON "FavsOnArtists"("artistId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Artist_id_key" ON "Artist"("id");
+CREATE UNIQUE INDEX "FavsOnAlbum_albumId_key" ON "FavsOnAlbum"("albumId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Album_id_key" ON "Album"("id");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Track_id_key" ON "Track"("id");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Favorites_id_key" ON "Favorites"("id");
+CREATE UNIQUE INDEX "FavsOnTrack_trackId_key" ON "FavsOnTrack"("trackId");
 
 -- AddForeignKey
 ALTER TABLE "Album" ADD CONSTRAINT "Album_artistId_fkey" FOREIGN KEY ("artistId") REFERENCES "Artist"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -72,3 +72,12 @@ ALTER TABLE "Track" ADD CONSTRAINT "Track_artistId_fkey" FOREIGN KEY ("artistId"
 
 -- AddForeignKey
 ALTER TABLE "Track" ADD CONSTRAINT "Track_albumId_fkey" FOREIGN KEY ("albumId") REFERENCES "Album"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "FavsOnArtists" ADD CONSTRAINT "FavsOnArtists_artistId_fkey" FOREIGN KEY ("artistId") REFERENCES "Artist"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "FavsOnAlbum" ADD CONSTRAINT "FavsOnAlbum_albumId_fkey" FOREIGN KEY ("albumId") REFERENCES "Album"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "FavsOnTrack" ADD CONSTRAINT "FavsOnTrack_trackId_fkey" FOREIGN KEY ("trackId") REFERENCES "Track"("id") ON DELETE CASCADE ON UPDATE CASCADE;

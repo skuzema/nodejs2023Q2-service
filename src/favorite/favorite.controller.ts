@@ -50,7 +50,7 @@ export class FavoriteController {
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ) {
     try {
-      return await this.favoriteService.remove(id);
+      return await this.favoriteService.removeTrack(id);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -75,7 +75,7 @@ export class FavoriteController {
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ) {
     try {
-      return await this.favoriteService.remove(id);
+      return await this.favoriteService.removeAlbum(id);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -102,7 +102,7 @@ export class FavoriteController {
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ) {
     try {
-      return await this.favoriteService.remove(id);
+      return await this.favoriteService.removeArtist(id);
     } catch (error) {
       throw new NotFoundException(error.message);
     }

@@ -22,10 +22,11 @@ npm install
 ## Running application
 
 Rename file `.env.example` to `.env`
-Run Docker Desktop and wait for the docker service to start
+
+Run Docker Desktop and wait for the docker service to start:
 
 ```
-docker-compose up --build -d
+docker-compose up
 ```
 
 If you have any troubles with Docker, please try to clear all docker images, volumes and containers.
@@ -40,7 +41,7 @@ docker system prune -a
 Please use these commands to scan docker images
 
 ```
-  npm run docker:scan
+npm run docker:scan
 ```
 
 ## Testing
@@ -59,8 +60,8 @@ To run only one of all test suites
 npm run test -- <path to suite>
 ```
 
-To run only specific test suite with authorization
+Linting with ESLint and formatting with Prettier
 
 ```
-npm run test:auth -- <path to suite>
+npm run lint
 ```
