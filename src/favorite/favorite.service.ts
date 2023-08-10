@@ -1,88 +1,124 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { DatabaseService } from 'src/database/database.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { MESSAGES } from 'src/resources/messages';
 
 @Injectable()
 export class FavoriteService {
-  constructor(private readonly dbService: DatabaseService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  findAll() {
+  async findAll() {
+    const getAlbums = await this.prisma.favsOnAlbum.findMany({
+      select: {
+        albumId: true,
+      },
+    });
+    const getTracks = await this.prisma.favsOnTrack.findMany({
+      select: {
+        trackId: true,
+      },
+    });
+    const getArtists = await this.prisma.favsOnArtists.findMany({
+      select: {
+        artistId: true,
+      },
+    });
     return {
-      albums: this.dbService.albums.filter((album) =>
-        this.dbService.favs.albums.includes(album.id),
-      ),
-      tracks: this.dbService.tracks.filter((track) =>
-        this.dbService.favs.tracks.includes(track.id),
-      ),
-      artists: this.dbService.artists.filter((artist) =>
-        this.dbService.favs.artists.includes(artist.id),
-      ),
+      albums: await this.prisma.album.findMany({
+        where: {
+          id: {
+            in: getAlbums.map((item) => item.albumId),
+          },
+        },
+      }),
+      tracks: await this.prisma.track.findMany({
+        where: {
+          id: {
+            in: getTracks.map((item) => item.trackId),
+          },
+        },
+      }),
+      artists: await this.prisma.artist.findMany({
+        where: {
+          id: {
+            in: getArtists.map((item) => item.artistId),
+          },
+        },
+      }),
     };
   }
 
-  addTrack(id: string) {
-    const track = this.dbService.tracks.find((track) => track.id === id);
-    if (!track) {
-      throw new HttpException(
-        MESSAGES.recordNotFound,
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
-    }
-    this.dbService.favs.tracks.push(id);
-    return MESSAGES.recordSuccessfullyCreated;
-  }
-
-  removeTrack(id: string) {
-    if (!this.dbService.favs.tracks.includes(id)) {
-      throw new HttpException(MESSAGES.recordNotFound, HttpStatus.NOT_FOUND);
-    }
-    this.dbService.favs.tracks = this.dbService.favs.tracks.filter(
-      (i) => i !== id,
-    );
-    return MESSAGES.recordDeletedSuccessfully;
-  }
-
-  addAlbum(id: string) {
-    const album = this.dbService.albums.find((album) => album.id === id);
-    if (!album) {
-      throw new HttpException(
-        MESSAGES.recordNotFound,
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
-    }
-    this.dbService.favs.albums.push(id);
-    return MESSAGES.recordSuccessfullyCreated;
-  }
-
-  removeAlbum(id: string) {
-    if (!this.dbService.favs.albums.includes(id)) {
-      throw new HttpException(MESSAGES.recordNotFound, HttpStatus.NOT_FOUND);
-    }
-    this.dbService.favs.albums = this.dbService.favs.albums.filter(
-      (i) => i !== id,
-    );
-    return MESSAGES.recordDeletedSuccessfully;
-  }
-
-  addArtist(id: string) {
-    const artist = this.dbService.artists.find((artist) => artist.id === id);
+  async addArtist(id: string) {
+    const artist = await this.prisma.artist.findUnique({ where: { id } });
     if (!artist) {
       throw new HttpException(
         MESSAGES.recordNotFound,
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
-    this.dbService.favs.artists.push(id);
-    return MESSAGES.recordSuccessfullyCreated;
+    await this.prisma.favsOnArtists.create({
+      data: { artistId: id },
+    });
+    return artist;
   }
 
-  removeArtist(id: string) {
-    if (!this.dbService.favs.artists.includes(id)) {
+  async removeArtist(id: string) {
+    try {
+      await this.prisma.favsOnArtists.delete({
+        where: { artistId: id },
+      });
+    } catch {
       throw new HttpException(MESSAGES.recordNotFound, HttpStatus.NOT_FOUND);
     }
-    this.dbService.favs.artists = this.dbService.favs.artists.filter(
-      (i) => i !== id,
-    );
+    return MESSAGES.recordDeletedSuccessfully;
+  }
+
+  async addAlbum(id: string) {
+    const album = await this.prisma.album.findUnique({ where: { id } });
+    if (!album) {
+      throw new HttpException(
+        MESSAGES.recordNotFound,
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+    await this.prisma.favsOnAlbum.create({
+      data: { albumId: id },
+    });
+    return album;
+  }
+
+  async removeAlbum(id: string) {
+    try {
+      await this.prisma.favsOnAlbum.delete({
+        where: { albumId: id },
+      });
+    } catch {
+      throw new HttpException(MESSAGES.recordNotFound, HttpStatus.NOT_FOUND);
+    }
+    return MESSAGES.recordDeletedSuccessfully;
+  }
+
+  async addTrack(id: string) {
+    const track = await this.prisma.track.findUnique({ where: { id } });
+    if (!track) {
+      throw new HttpException(
+        MESSAGES.recordNotFound,
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+    await this.prisma.favsOnTrack.create({
+      data: { trackId: id },
+    });
+    return track;
+  }
+
+  async removeTrack(id: string) {
+    try {
+      await this.prisma.favsOnTrack.delete({
+        where: { trackId: id },
+      });
+    } catch {
+      throw new HttpException(MESSAGES.recordNotFound, HttpStatus.NOT_FOUND);
+    }
     return MESSAGES.recordDeletedSuccessfully;
   }
 }

@@ -16,6 +16,9 @@ export class AlbumEntity {
   artistId: string | null;
 
   constructor(partial: Partial<AlbumEntity>) {
-    Object.assign(this, partial);
+    this.id = partial.id;
+    this.name = partial.name;
+    this.year = partial.year;
+    this.artistId = partial.artistId;
   }
 }

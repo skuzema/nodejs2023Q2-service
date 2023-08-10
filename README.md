@@ -8,24 +8,41 @@
 ## Downloading
 
 ```
-git clone {repository URL}
+git clone https://github.com/skuzema/nodejs2023Q2-service.git
 ```
 
-## Installing NPM modules
+## Switching to development branch and Installing NPM modules
 
 ```
+cd nodejs2023Q2-service
+git checkout dev-part2
 npm install
 ```
 
 ## Running application
 
+Rename file `.env.example` to `.env`
+
+Run Docker Desktop and wait for the docker service to start:
+
 ```
-npm start
+docker-compose up
 ```
 
-After starting the app on port (4000 as default) you can open
-in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
-For more information about OpenAPI/Swagger please visit https://swagger.io/.
+If you have any troubles with Docker, please try to clear all docker images, volumes and containers.
+(Clean / Purge data in Troubleshoot section of Docker Desktop)
+
+```
+docker system prune -a
+```
+
+## Docker security scans
+
+Please use these commands to scan docker images
+
+```
+npm run docker:scan
+```
 
 ## Testing
 
@@ -43,24 +60,8 @@ To run only one of all test suites
 npm run test -- <path to suite>
 ```
 
-To run all test with authorization
-
-```
-npm run test:auth
-```
-
-To run only specific test suite with authorization
-
-```
-npm run test:auth -- <path to suite>
-```
-
-### Auto-fix and format
+Linting with ESLint and formatting with Prettier
 
 ```
 npm run lint
-```
-
-```
-npm run format
 ```

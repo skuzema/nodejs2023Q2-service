@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: node
+    image: skuzema/home-library:node
+    build: .
+    ports:
+      - ${PORT}:${PORT}
+    env_file:
+      - .env
+    restart: always
+    networks:
+      - homelib-net
+    volumes:
+      - ./src:/app/src
+    depends_on:
+      - postgres
+
+  postgres:
+    container_name: postgres
+    image: skuzema/home-library:postgres
+    build: ./database
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    networks:
+      - homelib-net
+    restart: always
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - pg_logs:/var/log/postgresql
+
+volumes:
+  pg_data:
+  pg_logs:
+
+networks:
+  homelib-net:
+    name: homelib-net
+    driver: bridge

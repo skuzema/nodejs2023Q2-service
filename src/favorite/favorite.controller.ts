@@ -18,7 +18,6 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { AllFavoriteDto } from './dto/all-favorite.dto';
 import { MESSAGES } from 'src/resources/messages';
 
 @ApiTags('Favorites')
@@ -28,8 +27,8 @@ export class FavoriteController {
 
   @Get()
   @ApiOkResponse({ description: MESSAGES.ok })
-  findAll(): AllFavoriteDto {
-    return this.favoriteService.findAll();
+  async findAll() {
+    return await this.favoriteService.findAll();
   }
 
   @Post('track/:id')
@@ -37,8 +36,9 @@ export class FavoriteController {
   @ApiBadRequestResponse({
     description: MESSAGES.missingRequiredFields,
   })
-  addTrack(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    return this.favoriteService.addTrack(id);
+  async addTrack(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+    const newTrack = await this.favoriteService.addTrack(id);
+    return newTrack;
   }
 
   @Delete('track/:id')
@@ -50,7 +50,7 @@ export class FavoriteController {
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ) {
     try {
-      this.favoriteService.removeTrack(id);
+      return await this.favoriteService.removeTrack(id);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -61,8 +61,9 @@ export class FavoriteController {
   @ApiBadRequestResponse({
     description: MESSAGES.missingRequiredFields,
   })
-  addAlbum(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    return this.favoriteService.addAlbum(id);
+  async addAlbum(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+    const newAlbum = await this.favoriteService.addAlbum(id);
+    return newAlbum;
   }
 
   @Delete('album/:id')
@@ -74,7 +75,7 @@ export class FavoriteController {
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ) {
     try {
-      this.favoriteService.removeAlbum(id);
+      return await this.favoriteService.removeAlbum(id);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -85,8 +86,11 @@ export class FavoriteController {
   @ApiBadRequestResponse({
     description: MESSAGES.missingRequiredFields,
   })
-  addArtist(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    return this.favoriteService.addArtist(id);
+  async addArtist(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ) {
+    const newArtist = await this.favoriteService.addArtist(id);
+    return newArtist;
   }
 
   @Delete('artist/:id')
@@ -98,7 +102,7 @@ export class FavoriteController {
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ) {
     try {
-      this.favoriteService.removeArtist(id);
+      return await this.favoriteService.removeArtist(id);
     } catch (error) {
       throw new NotFoundException(error.message);
     }

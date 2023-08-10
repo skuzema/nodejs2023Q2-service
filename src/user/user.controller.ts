@@ -34,17 +34,17 @@ export class UserController {
 
   @Get()
   @ApiOkResponse({ description: MESSAGES.ok })
-  findAll() {
-    return this.userService.findAll();
+  async findAll() {
+    return await this.userService.findAll();
   }
 
   @Get(':id')
   @ApiOkResponse({ description: MESSAGES.ok })
   @ApiNotFoundResponse({ description: MESSAGES.recordNotFound })
   @ApiBadRequestResponse({ description: MESSAGES.invalidRecordId })
-  findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+  async findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     try {
-      return this.userService.findOne(id);
+      return await this.userService.findOne(id);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -55,8 +55,9 @@ export class UserController {
   @ApiBadRequestResponse({
     description: MESSAGES.missingRequiredFields,
   })
-  create(@Body() newUser: CreateUserDto): UserEntity {
-    return new UserEntity(this.userService.create(newUser));
+  async create(@Body() newUser: CreateUserDto) {
+    const createdUser = await this.userService.create(newUser);
+    return new UserEntity(createdUser);
   }
 
   @Put(':id')
@@ -64,12 +65,13 @@ export class UserController {
   @ApiBadRequestResponse({ description: MESSAGES.invalidRecordId })
   @ApiNotFoundResponse({ description: MESSAGES.recordNotFound })
   @ApiForbiddenResponse({ description: MESSAGES.oldPasswordIsWrong })
-  update(
+  async update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() update: UpdatePasswordDto,
   ) {
     try {
-      return new UserEntity(this.userService.update(id, update));
+      const updatedUser = await this.userService.update(id, update);
+      return updatedUser;
     } catch (error) {
       if (error instanceof Error && error.message === MESSAGES.recordNotFound) {
         throw new NotFoundException(error.message);

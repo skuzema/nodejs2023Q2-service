@@ -26,7 +26,6 @@ import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { StatusCodes } from 'http-status-codes';
 import { MESSAGES } from '../resources/messages';
-import { ArtistEntity } from './entities/artist.entity';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('Artists')
@@ -36,17 +35,17 @@ export class ArtistController {
 
   @Get()
   @ApiOkResponse({ description: MESSAGES.ok })
-  findAll(): ArtistEntity[] {
-    return this.artistService.findAll();
+  async findAll() {
+    return await this.artistService.findAll();
   }
 
   @Get(':id')
   @ApiOkResponse({ description: MESSAGES.ok })
   @ApiNotFoundResponse({ description: MESSAGES.recordNotFound })
   @ApiBadRequestResponse({ description: MESSAGES.invalidRecordId })
-  findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+  async findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     try {
-      return this.artistService.findOne(id);
+      return await this.artistService.findOne(id);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -57,20 +56,20 @@ export class ArtistController {
   @ApiBadRequestResponse({
     description: MESSAGES.missingRequiredFields,
   })
-  create(@Body() newArtist: CreateArtistDto): ArtistEntity {
-    return this.artistService.create(newArtist);
+  async create(@Body() newArtist: CreateArtistDto) {
+    return await this.artistService.create(newArtist);
   }
 
   @Put(':id')
   @ApiOkResponse({ description: MESSAGES.recordUpdatedSuccessfully })
   @ApiBadRequestResponse({ description: MESSAGES.invalidRecordId })
   @ApiNotFoundResponse({ description: MESSAGES.recordNotFound })
-  update(
+  async update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() update: UpdateArtistDto,
   ) {
     try {
-      return this.artistService.update(id, update);
+      return await this.artistService.update(id, update);
     } catch (error) {
       if (error instanceof Error && error.message === MESSAGES.recordNotFound) {
         throw new NotFoundException(error.message);

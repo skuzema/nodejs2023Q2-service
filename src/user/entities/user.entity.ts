@@ -22,6 +22,11 @@ export class UserEntity {
   password: string;
 
   constructor(partial: Partial<UserEntity>) {
-    Object.assign(this, partial);
+    this.id = partial.id;
+    this.login = partial.login;
+    this.version = partial.version;
+    this.createdAt = partial.createdAt;
+    this.updatedAt = partial.updatedAt;
+    this.password = partial.password;
   }
 }

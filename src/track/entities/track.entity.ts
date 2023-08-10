@@ -20,6 +20,10 @@ export class TrackEntity {
   duration: number;
 
   constructor(partial: Partial<TrackEntity>) {
-    Object.assign(this, partial);
+    this.id = partial.id;
+    this.name = partial.name;
+    this.artistId = partial.artistId;
+    this.albumId = partial.albumId;
+    this.duration = partial.duration;
   }
 }
