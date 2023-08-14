@@ -62,10 +62,22 @@ export class CustomLogger implements LoggerService {
     });
   }
 
-  private writeLog(level: string, message: any, context?: string) {
+  private writeLog(
+    level: string,
+    message: any,
+    context?: string,
+    request?: Request,
+    requestBody?: any,
+  ) {
     if (this.isLogLevelEnabled(level)) {
       const formattedMessage = this.formatMessage(message, context);
-      this.loggerStream.write(`${formattedMessage}\n`);
+      const requestInfo = request
+        ? `Request URL: ${request.url}, Method: ${
+            request.method
+          }, Request Body: ${JSON.stringify(requestBody)}`
+        : '';
+
+      this.loggerStream.write(`${formattedMessage}\n${requestInfo}\n`);
       console[level](formattedMessage);
     }
   }
