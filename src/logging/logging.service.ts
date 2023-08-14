@@ -1,31 +1,28 @@
-import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
-import * as fs from 'fs';
+import { Injectable, LoggerService } from '@nestjs/common';
+// import * as fs from 'fs';
 import * as path from 'path';
 import * as rfs from 'rotating-file-stream';
 
 @Injectable()
-export class LoggingService implements OnApplicationBootstrap {
-  private errorLogger: fs.WriteStream;
-  private logStream: rfs.RotatingFileStream;
+export class CustomLogger implements LoggerService {
+  private loggerStream: NodeJS.WritableStream;
+  private errorLoggerStream: NodeJS.WritableStream;
 
   constructor() {
-    const logDirectory = path.join(__dirname, '../../logs');
-    fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory);
-
-    // Set up error log file rotation
-    this.errorLogger = fs.createWriteStream(
-      path.join(logDirectory, 'error.log'),
-      {
-        flags: 'a',
-      },
-    );
-
     // Set up regular log file rotation
-    this.logStream = rfs.createStream('app.log', {
+    this.loggerStream = rfs.createStream('app.log', {
       size: process.env.LOG_MAX_SIZE || '10M',
       interval: '1d',
       compress: 'gzip',
-      path: logDirectory,
+      path: path.join(__dirname, '../../logs'),
+    });
+
+    // Set up error log file rotation
+    this.errorLoggerStream = rfs.createStream('error.log', {
+      size: process.env.LOG_MAX_SIZE || '10M',
+      interval: '1d',
+      compress: 'gzip',
+      path: path.join(__dirname, '../../logs'),
     });
   }
 
@@ -34,7 +31,7 @@ export class LoggingService implements OnApplicationBootstrap {
   }
 
   error(message: any, trace?: string, context?: string) {
-    this.errorLogger.write(
+    this.errorLoggerStream.write(
       `[${new Date().toISOString()}] [${context || 'Logger'}] - ${message}\n`,
     );
   }
@@ -68,7 +65,8 @@ export class LoggingService implements OnApplicationBootstrap {
   private writeLog(level: string, message: any, context?: string) {
     if (this.isLogLevelEnabled(level)) {
       const formattedMessage = this.formatMessage(message, context);
-      this.logStream.write(`${formattedMessage}\n`);
+      this.loggerStream.write(`${formattedMessage}\n`);
+      console[level](formattedMessage);
     }
   }
 

@@ -4,17 +4,19 @@ import { ValidationPipe } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { CustomExceptionFilter } from './logging/custom-exception.filter';
-import { LoggingService } from './logging/logging.service';
+import { CustomLogger } from './logging/logging.service';
 
 dotenv.config();
 const PORT = process.env.PORT || 4000;
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+  });
+  const loggingService = app.get(CustomLogger);
+  app.useLogger(loggingService);
 
   app.useGlobalPipes(new ValidationPipe());
-
-  const loggingService = app.get(LoggingService);
   app.useGlobalFilters(new CustomExceptionFilter(loggingService));
 
   const config = new DocumentBuilder()

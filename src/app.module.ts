@@ -7,7 +7,7 @@ import { AlbumModule } from './album/album.module';
 import { FavoriteModule } from './favorite/favorite.module';
 import { PrismaService } from './prisma/prisma.service';
 import { PrismaModule } from './prisma/prisma.module';
-import { LoggingService } from './logging/logging.service';
+import { CustomLogger } from './logging/logging.service';
 import { LoggingModule } from './logging/logging.module';
 import { LoggingMiddleware } from './middleware/logging.middleware';
 
@@ -22,7 +22,7 @@ import { LoggingMiddleware } from './middleware/logging.middleware';
     LoggingModule,
   ],
   controllers: [AppController],
-  providers: [PrismaService, LoggingService],
+  providers: [PrismaService, CustomLogger],
   exports: [],
 })
 export class AppModule implements NestModule {
