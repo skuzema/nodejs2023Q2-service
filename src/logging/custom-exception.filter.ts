@@ -22,9 +22,9 @@ export class CustomExceptionFilter implements ExceptionFilter {
         : 'Internal Server Error';
 
     this.loggingService.error(
-      `Request: ${ctx.getRequest().method} ${
+      `${ctx.getRequest().method} ${
         ctx.getRequest().url
-      } - Status: ${status} - Message: ${JSON.stringify(message)}`,
+      } | Status: ${status} | Message: ${JSON.stringify(message)} \n`,
       CustomExceptionFilter.name,
     );
 
