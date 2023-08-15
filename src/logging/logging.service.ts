@@ -90,11 +90,11 @@ export class CustomLogger implements LoggerService {
   }
 
   private isLogLevelEnabled(level: string): boolean {
-    const logLevel = process.env.LOG_LEVEL || 'log';
-    return (
-      ['log', 'error', 'warn', 'debug', 'verbose'].indexOf(level) >=
-      ['log', 'error', 'warn', 'debug', 'verbose'].indexOf(logLevel)
-    );
+    const logLevel = parseInt(process.env.LOG_LEVEL, 10) || 0;
+    const logLevels = ['log', 'error', 'warn', 'debug', 'verbose'];
+    const currentLogLevelIndex = logLevels.indexOf(level);
+
+    return currentLogLevelIndex <= logLevel;
   }
 
   private formatMessage(message: any, context?: string): string {
