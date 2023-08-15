@@ -16,6 +16,17 @@ async function bootstrap() {
   const loggingService = app.get(CustomLogger);
   app.useLogger(loggingService);
 
+  process.on('uncaughtException', (err, origin) => {
+    loggingService.error(
+      `Caught exception: ${err}. Exception origin: ${origin}.`,
+    );
+    process.exit(1);
+  });
+
+  process.on('unhandledRejection', (reason) => {
+    loggingService.error(`Unhandled Rejection at promise. ${reason}`);
+  });
+
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new CustomExceptionFilter(loggingService));
 

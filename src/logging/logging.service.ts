@@ -1,29 +1,21 @@
 import { Injectable, LoggerService } from '@nestjs/common';
-// import * as fs from 'fs';
+import * as fs from 'fs';
 import * as path from 'path';
-import * as rfs from 'rotating-file-stream';
 
 @Injectable()
 export class CustomLogger implements LoggerService {
-  private loggerStream: NodeJS.WritableStream;
-  private errorLoggerStream: NodeJS.WritableStream;
+  private loggerStream: fs.WriteStream;
+  private errorLoggerStream: fs.WriteStream;
+  private logDirectory: string = path.join(__dirname, '../../logs');
+  private logFilePrefix: string = 'app';
+  private errorLogFilePrefix: string = 'error';
+  private logFileExtension: string = 'log';
+  private errorLogFileExtension: string = 'log';
+  private logFileIndex: number = 1;
 
   constructor() {
-    // Set up regular log file rotation
-    this.loggerStream = rfs.createStream('app.log', {
-      size: process.env.LOG_MAX_SIZE || '10M',
-      interval: '1d',
-      compress: 'gzip',
-      path: path.join(__dirname, '../../logs'),
-    });
-
-    // Set up error log file rotation
-    this.errorLoggerStream = rfs.createStream('error.log', {
-      size: process.env.LOG_MAX_SIZE || '10M',
-      interval: '1d',
-      compress: 'gzip',
-      path: path.join(__dirname, '../../logs'),
-    });
+    this.loggerStream = this.createLogFileStream();
+    this.errorLoggerStream = this.createErrorLogFileStream();
   }
 
   log(message: any, context?: string) {
@@ -48,36 +40,51 @@ export class CustomLogger implements LoggerService {
     this.writeLog('verbose', message, context);
   }
 
-  async onApplicationBootstrap() {
-    process.on('uncaughtException', (error) => {
-      this.error('Uncaught Exception:', error.stack, 'UncaughtException');
-      process.exit(1);
-    });
-
-    process.on('unhandledRejection', (reason) => {
-      this.error(
-        'Unhandled Rejection: ' + (reason as string),
-        'UnhandledRejection',
-      );
-    });
+  private createLogFileStream(): fs.WriteStream {
+    const logFileName = this.getLogFileName();
+    return fs.createWriteStream(logFileName, { flags: 'a' });
   }
 
-  private writeLog(
-    level: string,
-    message: any,
-    context?: string,
-    request?: Request,
-    requestBody?: any,
-  ) {
+  private createErrorLogFileStream(): fs.WriteStream {
+    const logFileName = this.getLogErrorFileName();
+    return fs.createWriteStream(logFileName, { flags: 'a' });
+  }
+
+  private getLogFileName(): string {
+    const currentDate = new Date().toISOString().slice(0, 10);
+    return path.join(
+      this.logDirectory,
+      `${this.logFilePrefix}_${currentDate}_${this.logFileIndex}.${this.logFileExtension}`,
+    );
+  }
+
+  private getLogErrorFileName(): string {
+    const currentDate = new Date().toISOString().slice(0, 10);
+    return path.join(
+      this.logDirectory,
+      `${this.errorLogFilePrefix}_${currentDate}_${this.logFileIndex}.${this.errorLogFileExtension}`,
+    );
+  }
+
+  private writeLog(level: string, message: any, context?: string) {
     if (this.isLogLevelEnabled(level)) {
       const formattedMessage = this.formatMessage(message, context);
-      const requestInfo = request
-        ? `Request URL: ${request.url}, Method: ${
-            request.method
-          }, Request Body: ${JSON.stringify(requestBody)}`
-        : '';
+      this.loggerStream.write(`${formattedMessage}\n`);
+      fs.stat(this.getLogFileName(), (err, stats) => {
+        if (err) {
+          console.error('Error getting file stats:', err);
+          return;
+        }
 
-      this.loggerStream.write(`${formattedMessage}\n${requestInfo}\n`);
+        if (
+          stats.size >=
+          parseInt(process.env.LOG_MAX_SIZE || '10240') * 1024
+        ) {
+          this.loggerStream.end();
+          this.loggerStream = this.createLogFileStream();
+        }
+      });
+
       console[level](formattedMessage);
     }
   }
