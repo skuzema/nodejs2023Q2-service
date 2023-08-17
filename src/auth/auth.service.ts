@@ -1,18 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+// import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UserEntity } from 'src/user/entities/user.entity';
-import { UserService } from 'src/user/user.service';
+// import { UserService } from 'src/user/user.service';
 import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private userService: UserService,
-    private prisma: PrismaService,
-    private jwtService: JwtService,
+    // private userService: UserService,
+    private prisma: PrismaService, // private jwtService: JwtService,
   ) {}
 
   async signup(newUser: CreateUserDto) {

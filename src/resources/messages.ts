@@ -8,4 +8,5 @@ export const MESSAGES = {
   oldPasswordIsWrong: 'Old password is wrong',
   recordDeletedSuccessfully: 'Record deleted successfully',
   recordUpdatedSuccessfully: 'Record updated successfully',
+  invalidDto: 'Dto is invalid',
 };

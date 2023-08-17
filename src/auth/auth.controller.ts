@@ -1,4 +1,24 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiCreatedResponse,
+  ApiBadRequestResponse,
+} from '@nestjs/swagger';
+import { Public } from 'src/decorators/public.decorator';
+import { AuthService } from './auth.service';
+import { MESSAGES } from '../resources/messages';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
 
+@Public()
+@ApiTags('auth')
 @Controller('auth')
-export class AuthController {}
+export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
+  @Post('signup')
+  @ApiCreatedResponse({ description: MESSAGES.ok })
+  @ApiBadRequestResponse({ description: MESSAGES.invalidDto })
+  async signup(@Body() createAuthDto: CreateUserDto) {
+    return await this.authService.signup(createAuthDto);
+  }
+}
