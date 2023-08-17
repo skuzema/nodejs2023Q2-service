@@ -22,6 +22,10 @@ export class UserService {
     return user;
   }
 
+  async findByLogin(login: string) {
+    return await this.prisma.user.findFirstOrThrow({ where: { login: login } });
+  }
+
   async create(newUser: CreateUserDto) {
     const currentTime = Date.now();
     const user: UserEntity = {

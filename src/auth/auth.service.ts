@@ -1,24 +1,34 @@
-import { Injectable } from '@nestjs/common';
-// import { JwtService } from '@nestjs/jwt';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UserEntity } from 'src/user/entities/user.entity';
-// import { UserService } from 'src/user/user.service';
+import { UserService } from 'src/user/user.service';
 import { v4 as uuid } from 'uuid';
+import { LoginDto } from './dto/login-user.dto';
+import { MESSAGES } from 'src/resources/messages';
+import {
+  CRYPT_SALT,
+  JWT_SECRET_KEY,
+  JWT_SECRET_REFRESH_KEY,
+  TOKEN_EXPIRE_TIME,
+  TOKEN_REFRESH_EXPIRE_TIME,
+} from '../resources/constants';
 
 @Injectable()
 export class AuthService {
   constructor(
-    // private userService: UserService,
-    private prisma: PrismaService, // private jwtService: JwtService,
+    private userService: UserService,
+    private prisma: PrismaService,
+    private jwtService: JwtService,
   ) {}
 
   async signup(newUser: CreateUserDto) {
     const currentTime = Date.now();
     const passwordHash = await bcrypt.hash(
       newUser.password,
-      Number(process.env.CRYPT_SALT || 10),
+      Number(CRYPT_SALT || 10),
     );
     const user: UserEntity = {
       ...newUser,
@@ -42,4 +52,28 @@ export class AuthService {
     });
     return newUserEntity;
   }
+
+  async login(loginDto: LoginDto) {
+    const user = await this.userService.findByLogin(loginDto.login);
+
+    if (user && (await bcrypt.compare(loginDto.password, user.password))) {
+      const payload = { userId: user.id, login: user.login };
+      const [accessToken, refreshToken] = await Promise.all([
+        this.jwtService.signAsync(payload, {
+          secret: JWT_SECRET_KEY,
+          expiresIn: TOKEN_EXPIRE_TIME,
+        }),
+        this.jwtService.signAsync(payload, {
+          secret: JWT_SECRET_REFRESH_KEY,
+          expiresIn: TOKEN_REFRESH_EXPIRE_TIME,
+        }),
+      ]);
+
+      return { accessToken, refreshToken };
+    } else {
+      throw new UnauthorizedException(MESSAGES.authFailed);
+    }
+  }
+
+  private generateRefreshToken() {}
 }

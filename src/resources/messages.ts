@@ -9,4 +9,5 @@ export const MESSAGES = {
   recordDeletedSuccessfully: 'Record deleted successfully',
   recordUpdatedSuccessfully: 'Record updated successfully',
   invalidDto: 'Dto is invalid',
+  authFailed: 'Authentication failed',
 };
