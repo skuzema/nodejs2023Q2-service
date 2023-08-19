@@ -13,6 +13,7 @@ import { LoggingMiddleware } from './middleware/logging.middleware';
 import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth/auth.guard';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { AuthGuard } from './auth/auth.guard';
   ],
   controllers: [AppController],
   providers: [
+    AppService,
     PrismaService,
     CustomLogger,
     {
