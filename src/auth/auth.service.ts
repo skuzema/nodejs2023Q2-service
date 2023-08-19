@@ -1,10 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UserEntity } from 'src/user/entities/user.entity';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 import { v4 as uuid } from 'uuid';
 import { LoginDto } from './dto/login-user.dto';
 import { MESSAGES } from 'src/resources/messages';
@@ -75,5 +75,9 @@ export class AuthService {
     }
   }
 
-  private generateRefreshToken() {}
+  async validateToken(token: string) {
+    return await this.jwtService.verifyAsync(token, {
+      secret: JWT_SECRET_KEY,
+    });
+  }
 }

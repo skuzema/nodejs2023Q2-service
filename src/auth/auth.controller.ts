@@ -12,12 +12,12 @@ import { MESSAGES } from '../resources/messages';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { LoginDto } from './dto/login-user.dto';
 
-@Public()
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @Post('signup')
   @ApiCreatedResponse({ description: MESSAGES.ok })
   @ApiBadRequestResponse({ description: MESSAGES.invalidDto })
@@ -25,6 +25,7 @@ export class AuthController {
     return await this.authService.signup(createAuthDto);
   }
 
+  @Public()
   @Post('login')
   @ApiOkResponse({ description: MESSAGES.ok })
   @ApiBadRequestResponse({ description: MESSAGES.invalidDto })
