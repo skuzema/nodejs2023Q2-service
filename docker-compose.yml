@@ -14,6 +14,7 @@ services:
       - homelib-net
     volumes:
       - ./src:/app/src
+      - ./logs:/app/logs
     depends_on:
       - postgres
 

@@ -15,18 +15,26 @@ git clone https://github.com/skuzema/nodejs2023Q2-service.git
 
 ```
 cd nodejs2023Q2-service
-git checkout dev-part2
+git checkout dev-part3
 npm install
 ```
 
-## Running application
+## Environment
 
 Rename file `.env.example` to `.env`
+
+## Running application
 
 Run Docker Desktop and wait for the docker service to start:
 
 ```
 docker-compose up
+```
+
+or
+
+```
+npm run docker:start
 ```
 
 If you have any troubles with Docker, please try to clear all docker images, volumes and containers.
@@ -48,16 +56,16 @@ npm run docker:scan
 
 After application running open new terminal and enter:
 
-To run all tests without authorization
+To run all test with authorization
 
 ```
-npm run test
+npm run test:auth
 ```
 
 To run only one of all test suites
 
 ```
-npm run test -- <path to suite>
+npm run test:auth -- <path to suite>
 ```
 
 Linting with ESLint and formatting with Prettier
