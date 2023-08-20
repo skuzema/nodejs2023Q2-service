@@ -43,6 +43,16 @@ async function bootstrap() {
       'Users can create, read, update, delete data about Artists, Tracks and Albums, add them to Favorites in their own Home Library!',
     )
     .setVersion('1.0')
+    .addTag('Default')
+    .addTag('Auth')
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+      'access-token',
+    )
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+      'refresh-token',
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

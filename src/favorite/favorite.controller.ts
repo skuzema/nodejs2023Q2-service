@@ -17,11 +17,13 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiTags,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { MESSAGES } from 'src/resources/messages';
 
 @ApiTags('Favorites')
 @Controller('favs')
+@ApiBearerAuth('access-token')
 export class FavoriteController {
   constructor(private readonly favoriteService: FavoriteService) {}
 

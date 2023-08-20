@@ -20,6 +20,7 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiTags,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { AlbumService } from './album.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
@@ -30,6 +31,7 @@ import { MESSAGES } from '../resources/messages';
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('Albums')
 @Controller('album')
+@ApiBearerAuth('access-token')
 export class AlbumController {
   constructor(private readonly albumService: AlbumService) {}
 
