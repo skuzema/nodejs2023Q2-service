@@ -7,5 +7,6 @@ import { PrismaModule } from 'src/prisma/prisma.module';
   imports: [PrismaModule],
   controllers: [FavoriteController],
   providers: [FavoriteService],
+  exports: [FavoriteService],
 })
 export class FavoriteModule {}

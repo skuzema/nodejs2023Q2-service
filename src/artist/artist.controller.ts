@@ -20,6 +20,7 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiTags,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
@@ -30,6 +31,7 @@ import { MESSAGES } from '../resources/messages';
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('Artists')
 @Controller('artist')
+@ApiBearerAuth('access-token')
 export class ArtistController {
   constructor(private readonly artistService: ArtistService) {}
 

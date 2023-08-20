@@ -20,6 +20,7 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiTags,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { TrackService } from './track.service';
 import { CreateTrackDto } from './dto/create-track.dto';
@@ -30,6 +31,7 @@ import { MESSAGES } from '../resources/messages';
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('Tracks')
 @Controller('track')
+@ApiBearerAuth('access-token')
 export class TrackController {
   constructor(private readonly trackService: TrackService) {}
 
