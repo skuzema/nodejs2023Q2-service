@@ -28,13 +28,13 @@ Rename file `.env.example` to `.env`
 Run Docker Desktop and wait for the docker service to start:
 
 ```
-docker-compose up
+docker-compose up --build
 ```
 
 or
 
 ```
-npm run docker:start
+npm run docker:build
 ```
 
 If you have any troubles with Docker, please try to clear all docker images, volumes and containers.

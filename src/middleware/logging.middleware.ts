@@ -51,9 +51,14 @@ export class LoggingMiddleware implements NestMiddleware {
         statusCode,
         duration,
       };
-      logger.log(
-        `${message.method} ${message.baseUrl} | Parameters: ${message.query} | Body: ${message.requestBody} | Response: ${message.responseBody} | Status: ${statusCode} | Duration: ${duration}ms`,
-      );
+      const messageStr = `${message.method} ${message.baseUrl} | Parameters: ${message.query} | Body: ${message.requestBody} | Response: ${message.responseBody} | Status: ${statusCode} | Duration: ${duration}ms`;
+      if (statusCode < 300) {
+        logger.log(messageStr);
+      } else if (statusCode < 400) {
+        logger.warn(messageStr);
+      } else {
+        logger.error(messageStr);
+      }
 
       return originalEnd.apply(res, [chunk, ...restArgs]);
     };

@@ -2,6 +2,7 @@ import { Injectable, LoggerService } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
 import { LOG_DIR, LOG_LEVEL, LOG_MAX_SIZE } from 'src/resources/constants';
+type LogLevel = 'log' | 'error' | 'warn' | 'debug' | 'verbose';
 
 @Injectable()
 export class CustomLogger implements LoggerService {
@@ -13,10 +14,11 @@ export class CustomLogger implements LoggerService {
   private logFileExtension: string = 'log';
   private errorLogFileExtension: string = 'log';
   private logFileIndex: number = 0;
+  private errFileIndex: number = 0;
 
   constructor() {
-    this.loggerStream = this.createLogFileStream();
-    this.errorLoggerStream = this.createErrorLogFileStream();
+    this.loggerStream = this.createLogFileStream('log');
+    this.errorLoggerStream = this.createLogFileStream('error');
   }
 
   log(message: any, context?: string) {
@@ -24,9 +26,7 @@ export class CustomLogger implements LoggerService {
   }
 
   error(message: any, trace?: string, context?: string) {
-    const formattedMessage = this.formatMessage(message, context);
-    this.errorLoggerStream.write(formattedMessage);
-    console['error'](formattedMessage);
+    this.writeLog('error', message, context);
   }
 
   warn(message: any, context?: string) {
@@ -41,46 +41,49 @@ export class CustomLogger implements LoggerService {
     this.writeLog('verbose', message, context);
   }
 
-  private createLogFileStream(): fs.WriteStream {
-    const logFileName = this.getLogFileName();
+  private createLogFileStream(type: LogLevel = 'log'): fs.WriteStream {
+    const logFileName = this.getLogFileName(type);
     return fs.createWriteStream(logFileName, { flags: 'a' });
   }
 
-  private createErrorLogFileStream(): fs.WriteStream {
-    const logFileName = this.getLogErrorFileName();
-    return fs.createWriteStream(logFileName, { flags: 'a' });
-  }
-
-  private getLogFileName(): string {
+  private getLogFileName(type: LogLevel): string {
     const currentDate = new Date().toISOString().slice(0, 10);
+    const prefix =
+      type === 'log' ? this.logFilePrefix : this.errorLogFilePrefix;
+    const extension =
+      type === 'log' ? this.logFileExtension : this.errorLogFileExtension;
+    const index = type === 'log' ? this.logFileIndex : this.errFileIndex;
     return path.join(
       this.logDirectory,
-      `${this.logFilePrefix}_${currentDate}_${this.logFileIndex}.${this.logFileExtension}`,
+      `${prefix}_${currentDate}_${index}.${extension}`,
     );
   }
 
-  private getLogErrorFileName(): string {
-    const currentDate = new Date().toISOString().slice(0, 10);
-    return path.join(
-      this.logDirectory,
-      `${this.errorLogFilePrefix}_${currentDate}_${this.logFileIndex}.${this.errorLogFileExtension}`,
-    );
-  }
-
-  private writeLog(level: string, message: any, context?: string) {
+  private writeLog(level: LogLevel, message: any, context?: string) {
     if (this.isLogLevelEnabled(level)) {
       const formattedMessage = this.formatMessage(message, context);
-      this.loggerStream.write(`${formattedMessage}\n`);
-      fs.stat(this.getLogFileName(), (err, stats) => {
+      const targetStream =
+        level === 'error' ? this.errorLoggerStream : this.loggerStream;
+      targetStream.write(`${formattedMessage}\n`);
+      fs.stat(this.getLogFileName(level), (err, stats) => {
         if (err) {
           console.error('Error getting file stats:', err);
           return;
         }
         const logMaxSize = LOG_MAX_SIZE * 1024;
         if (stats.size >= logMaxSize) {
-          this.loggerStream.end();
-          this.logFileIndex++;
-          this.loggerStream = this.createLogFileStream();
+          targetStream.end();
+          if (level === 'error') {
+            this.errFileIndex++;
+          } else {
+            this.logFileIndex++;
+          }
+          const newStream = this.createLogFileStream(level);
+          if (level === 'error') {
+            this.errorLoggerStream = newStream;
+          } else {
+            this.loggerStream = newStream;
+          }
         }
       });
       console[level](formattedMessage);
@@ -88,7 +91,7 @@ export class CustomLogger implements LoggerService {
   }
 
   private isLogLevelEnabled(level: string): boolean {
-    const logLevels = ['log', 'error', 'warn', 'debug', 'verbose'];
+    const logLevels = ['error', 'warn', 'log', 'verbose', 'debug'];
     const currentLogLevelIndex = logLevels.indexOf(level);
     return currentLogLevelIndex <= LOG_LEVEL;
   }
