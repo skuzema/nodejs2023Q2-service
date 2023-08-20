@@ -10,6 +10,6 @@ export const TOKEN_EXPIRE_TIME = process.env.TOKEN_EXPIRE_TIME || '1h';
 export const TOKEN_REFRESH_EXPIRE_TIME =
   process.env.TOKEN_REFRESH_EXPIRE_TIME || '24h';
 
-export const LOG_DIR = process.env.LOG_DIR || './logs';
-export const LOG_MAX_SIZE = +process.env.LOG_MAX_SIZE || 100;
-export const LOG_LEVEL = process.env.LOG_LEVEL || 2;
+export const LOG_DIR = process.env.LOG_DIR || '../../logs';
+export const LOG_MAX_SIZE = +process.env.LOG_MAX_SIZE || 10240;
+export const LOG_LEVEL = +process.env.LOG_LEVEL || 2;

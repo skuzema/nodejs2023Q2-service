@@ -21,12 +21,14 @@ export class CustomExceptionFilter implements ExceptionFilter {
         ? exception.getResponse()
         : 'Internal Server Error';
 
-    this.loggingService.error(
-      `${ctx.getRequest().method} ${
-        ctx.getRequest().url
-      } | Status: ${status} | Message: ${JSON.stringify(message)} \n`,
-      CustomExceptionFilter.name,
-    );
+    if (!(exception instanceof HttpException)) {
+      this.loggingService.error(
+        `${ctx.getRequest().method} ${
+          ctx.getRequest().url
+        } | Status: ${status} | Message: ${JSON.stringify(message)}`,
+        CustomExceptionFilter.name,
+      );
+    }
 
     response.status(status).json({
       statusCode: status,

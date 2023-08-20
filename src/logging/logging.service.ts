@@ -1,16 +1,13 @@
 import { Injectable, LoggerService } from '@nestjs/common';
-import { LoggerColors } from '../resources/colors';
 import * as fs from 'fs';
 import * as path from 'path';
+import { LOG_DIR, LOG_LEVEL, LOG_MAX_SIZE } from 'src/resources/constants';
 
 @Injectable()
 export class CustomLogger implements LoggerService {
   private loggerStream: fs.WriteStream;
   private errorLoggerStream: fs.WriteStream;
-  private logDirectory: string = path.join(
-    __dirname,
-    process.env.LOG_DIR || '../../logs',
-  );
+  private logDirectory: string = path.join(__dirname, LOG_DIR);
   private logFilePrefix: string = 'app';
   private errorLogFilePrefix: string = 'error';
   private logFileExtension: string = 'log';
@@ -23,25 +20,25 @@ export class CustomLogger implements LoggerService {
   }
 
   log(message: any, context?: string) {
-    this.writeLog('log', message, context, LoggerColors.White);
+    this.writeLog('log', message, context);
   }
 
   error(message: any, trace?: string, context?: string) {
     const formattedMessage = this.formatMessage(message, context);
     this.errorLoggerStream.write(formattedMessage);
-    console['error'](formattedMessage, LoggerColors.Red);
+    console['error'](formattedMessage);
   }
 
   warn(message: any, context?: string) {
-    this.writeLog('warn', message, context, LoggerColors.Yellow);
+    this.writeLog('warn', message, context);
   }
 
   debug(message: any, context?: string) {
-    this.writeLog('debug', message, context, LoggerColors.Green);
+    this.writeLog('debug', message, context);
   }
 
   verbose(message: any, context?: string) {
-    this.writeLog('verbose', message, context, LoggerColors.Cyan);
+    this.writeLog('verbose', message, context);
   }
 
   private createLogFileStream(): fs.WriteStream {
@@ -70,14 +67,8 @@ export class CustomLogger implements LoggerService {
     );
   }
 
-  private writeLog(
-    level: string,
-    message: any,
-    context?: string,
-    color: string = LoggerColors.White,
-  ) {
+  private writeLog(level: string, message: any, context?: string) {
     if (this.isLogLevelEnabled(level)) {
-      color = LoggerColors.White;
       const formattedMessage = this.formatMessage(message, context);
       this.loggerStream.write(`${formattedMessage}\n`);
       fs.stat(this.getLogFileName(), (err, stats) => {
@@ -85,30 +76,26 @@ export class CustomLogger implements LoggerService {
           console.error('Error getting file stats:', err);
           return;
         }
-        const logMaxSizeStr = process.env.LOG_MAX_SIZE || '10240';
-        const logMaxSize = parseInt(logMaxSizeStr) * 1024;
+        const logMaxSize = LOG_MAX_SIZE * 1024;
         if (stats.size >= logMaxSize) {
           this.loggerStream.end();
           this.logFileIndex++;
           this.loggerStream = this.createLogFileStream();
         }
       });
-
-      console[level](formattedMessage, color);
+      console[level](formattedMessage);
     }
   }
 
   private isLogLevelEnabled(level: string): boolean {
-    const logLevel = parseInt(process.env.LOG_LEVEL, 10) || 0;
     const logLevels = ['log', 'error', 'warn', 'debug', 'verbose'];
     const currentLogLevelIndex = logLevels.indexOf(level);
-
-    return currentLogLevelIndex <= logLevel;
+    return currentLogLevelIndex <= LOG_LEVEL;
   }
 
   private formatMessage(message: any, context?: string): string {
     return `[${new Date().toISOString()}] [${
-      context || 'Logger'
+      context || 'Custom Logger'
     }] - ${message}`;
   }
 }
